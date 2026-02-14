@@ -56,120 +56,213 @@ class Ai1wm_Debug_Report {
 		$report = self::generate();
 		$output = '';
 
-		$output .= self::section_header( 'ServMask Debug Report' );
-		$output .= "Generated: " . $report['generated_at'] . "\n";
-		$output .= "Plugin Version: " . $report['plugin'] . "\n";
-		$output .= "\n";
+		$output .= self::section_title( 'ServMask Debug Report' );
+		$output .= self::table( array(
+			array( 'Generated', $report['generated_at'] ),
+			array( 'Plugin Version', $report['plugin'] ),
+		) );
 
-		// Environment
-		$output .= self::section_header( 'PHP Information' );
-		$output .= self::format_rows( $report['environment']['php'] );
+		// PHP
+		$output .= self::section_title( 'PHP' );
+		$output .= self::table( self::status_rows( $report['environment']['php'] ) );
 
-		$output .= self::section_header( 'WordPress Information' );
-		$output .= self::format_rows( $report['environment']['wp'] );
+		// WordPress
+		$output .= self::section_title( 'WordPress' );
+		$output .= self::table( self::status_rows( $report['environment']['wp'] ) );
 
-		$output .= self::section_header( 'Server Information' );
-		$output .= self::format_rows( $report['environment']['server'] );
+		// Server
+		$output .= self::section_title( 'Server' );
+		$output .= self::table( self::status_rows( $report['environment']['server'] ) );
 
-		// Filesystem
-		$output .= self::section_header( 'Filesystem' );
+		// Filesystem - Directories
+		$output .= self::section_title( 'Filesystem' );
+		$fs_rows = array();
 		foreach ( $report['filesystem']['directories'] as $dir ) {
-			$output .= sprintf(
-				"%-20s %-50s Exists: %-3s Writable: %-3s Perms: %s\n",
-				$dir['label'],
-				$dir['path'],
-				$dir['exists'] ? 'Yes' : 'No',
-				$dir['writable'] ? 'Yes' : 'No',
-				$dir['perms']
-			);
+			if ( ! $dir['exists'] ) {
+				$fs_rows[] = array( $dir['label'], 'MISSING' );
+			} else {
+				$props = array();
+				$props[] = $dir['writable'] ? 'Writable' : 'NOT WRITABLE';
+				$props[] = $dir['perms'];
+				if ( ! empty( $dir['owner'] ) && $dir['owner'] !== 'N/A' ) {
+					$props[] = $dir['owner'] . ':' . $dir['group'];
+				}
+				$fs_rows[] = array( $dir['label'], implode( '  ', $props ) );
+				$fs_rows[] = array( '', $dir['path'] );
+			}
 		}
-		$output .= "\n";
-		$output .= "Disk Free:  " . $report['filesystem']['disk']['free'] . "\n";
-		$output .= "Disk Total: " . $report['filesystem']['disk']['total'] . "\n";
-		$output .= "Temp Dir:   " . $report['filesystem']['temp']['path'] . " (Writable: " . ( $report['filesystem']['temp']['writable'] ? 'Yes' : 'No' ) . ")\n";
+
+		$fs_rows[] = array( '', '' );
+		$fs_rows[] = array( 'Disk Free', $report['filesystem']['disk']['free'] );
+		$fs_rows[] = array( 'Disk Total', $report['filesystem']['disk']['total'] );
+		$fs_rows[] = array( 'Temp Dir', $report['filesystem']['temp']['path'] . ' (' . ( $report['filesystem']['temp']['writable'] ? 'Writable' : 'NOT WRITABLE' ) . ')' );
+		$output .= self::table( $fs_rows );
 
 		// Database
-		$output .= self::section_header( 'Database' );
+		$output .= self::section_title( 'Database' );
 		$db = $report['database'];
-		$output .= "Version:    " . $db['version'] . "\n";
-		$output .= "Name:       " . $db['name'] . "\n";
-		$output .= "Host:       " . $db['host'] . "\n";
-		$output .= "Charset:    " . $db['charset'] . "\n";
-		$output .= "Prefix:     " . $db['prefix'] . "\n";
-		$output .= "Total Size: " . $db['total_size'] . "\n";
-		$output .= "Autoloaded: " . $db['autoloaded_size'] . "\n";
+		$output .= self::table( array(
+			array( 'Version', $db['version'] ),
+			array( 'Name', $db['name'] ),
+			array( 'Host', $db['host'] ),
+			array( 'Charset', $db['charset'] ),
+			array( 'Table Prefix', $db['prefix'] ),
+			array( 'Total Size', $db['total_size'] ),
+			array( 'Autoloaded', $db['autoloaded_size'] ),
+		) );
 
-		// Plugins
+		// AI1WM Ecosystem
 		$plugins = $report['plugins'];
-
-		$output .= self::section_header( 'AI1WM Ecosystem' );
+		$output .= self::section_title( 'AI1WM Ecosystem' );
+		$eco_rows = array();
 		foreach ( $plugins['ai1wm_ecosystem'] as $ext ) {
-			$version_info = $ext['version'];
-			if ( $ext['installed'] && ! empty( $ext['latest'] ) ) {
-				$version_info = sprintf( 'Installed: %s (Latest: %s)%s', $ext['version'], $ext['latest'], $ext['up_to_date'] ? '' : ' [OUTDATED]' );
+			if ( $ext['installed'] ) {
+				$version_str = 'v' . $ext['version'];
+				if ( ! empty( $ext['latest'] ) ) {
+					if ( $ext['up_to_date'] ) {
+						$version_str .= ' (latest)';
+					} else {
+						$version_str .= ' -> v' . $ext['latest'] . ' available';
+					}
+				}
+				$eco_rows[] = array( '[x] ' . $ext['name'], $version_str );
+			} else {
+				$eco_rows[] = array( '[ ] ' . $ext['name'], '' );
 			}
-			$output .= sprintf(
-				"%-40s %-15s %s\n",
-				$ext['name'],
-				$ext['installed'] ? 'Installed' : 'Not Installed',
-				$version_info
-			);
 		}
+		$output .= self::table( $eco_rows );
 
+		// Known Conflicts
 		if ( ! empty( $plugins['known_conflicts'] ) ) {
-			$output .= self::section_header( 'Known Conflicts' );
+			$output .= self::section_title( 'Known Conflicts' );
+			$conflict_rows = array();
 			foreach ( $plugins['known_conflicts'] as $conflict ) {
-				$output .= "- " . $conflict['name'] . ": " . $conflict['reason'] . "\n";
+				$conflict_rows[] = array( '[' . strtoupper( $conflict['severity'] ) . '] ' . $conflict['name'], $conflict['reason'] );
 			}
+			$output .= self::table( $conflict_rows );
 		}
 
-		$output .= self::section_header( 'Active Plugins' );
+		// Active Plugins
+		$output .= self::section_title( 'Active Plugins (' . count( $plugins['active_plugins'] ) . ')' );
+		$ap_rows = array();
 		foreach ( $plugins['active_plugins'] as $plugin ) {
-			$output .= sprintf( "- %s (v%s)\n", $plugin['name'], $plugin['version'] );
+			$ap_rows[] = array( $plugin['name'], 'v' . $plugin['version'] );
 		}
+		$output .= self::table( $ap_rows );
 
-		$output .= self::section_header( 'Inactive Plugins' );
+		// Inactive Plugins
+		$output .= self::section_title( 'Inactive Plugins (' . count( $plugins['inactive_plugins'] ) . ')' );
+		$ip_rows = array();
 		foreach ( $plugins['inactive_plugins'] as $plugin ) {
-			$output .= sprintf( "- %s (v%s)\n", $plugin['name'], $plugin['version'] );
+			$ip_rows[] = array( $plugin['name'], 'v' . $plugin['version'] );
+		}
+		$output .= self::table( $ip_rows );
+
+		// Active Theme
+		$output .= self::section_title( 'Active Theme' );
+		$theme = $plugins['active_theme'];
+		$theme_rows = array(
+			array( 'Name', $theme['name'] ),
+			array( 'Version', $theme['version'] ),
+		);
+		if ( $theme['is_child'] ) {
+			$theme_rows[] = array( 'Parent Theme', $theme['parent'] );
+		}
+		$output .= self::table( $theme_rows );
+
+		// Inactive Themes
+		if ( ! empty( $plugins['inactive_themes'] ) ) {
+			$output .= self::section_title( 'Inactive Themes (' . count( $plugins['inactive_themes'] ) . ')' );
+			$it_rows = array();
+			foreach ( $plugins['inactive_themes'] as $t ) {
+				$it_rows[] = array( $t['name'], 'v' . $t['version'] );
+			}
+			$output .= self::table( $it_rows );
 		}
 
-		$output .= self::section_header( 'Active Theme' );
-		$theme = $plugins['active_theme'];
-		$output .= "Name:    " . $theme['name'] . "\n";
-		$output .= "Version: " . $theme['version'] . "\n";
-		$output .= "Child:   " . ( $theme['is_child'] ? 'Yes (Parent: ' . $theme['parent'] . ')' : 'No' ) . "\n";
+		// Operations (AI1WM-dependent)
+		if ( ! empty( $report['operations'] ) ) {
+			$ops = $report['operations'];
 
-		$output .= self::section_header( 'Inactive Themes' );
-		foreach ( $plugins['inactive_themes'] as $t ) {
-			$output .= sprintf( "- %s (v%s)\n", $t['name'], $t['version'] );
+			$output .= self::section_title( 'Operations' );
+			$ops_rows = array();
+			$ops_rows[] = array( 'Active Operation', $ops['current']['active'] ? 'Yes (' . $ops['current']['type'] . ')' : 'No' );
+
+			if ( ! empty( $ops['issues'] ) ) {
+				foreach ( $ops['issues'] as $issue ) {
+					$ops_rows[] = array( '[' . strtoupper( $issue['severity'] ) . '] Issue', $issue['message'] );
+				}
+			}
+			$output .= self::table( $ops_rows );
+
+			if ( ! empty( $ops['backups'] ) ) {
+				$output .= self::section_title( 'Backups' );
+				$bk_rows = array();
+				foreach ( $ops['backups'] as $backup ) {
+					$bk_rows[] = array( $backup['name'], $backup['size'] );
+				}
+				$output .= self::table( $bk_rows );
+			}
 		}
 
 		return $output;
 	}
 
 	/**
-	 * Format a section header
+	 * Format a section title
 	 *
 	 * @param  string $title
 	 * @return string
 	 */
-	private static function section_header( $title ) {
-		$line = str_repeat( '=', 70 );
-		return "\n" . $line . "\n " . $title . "\n" . $line . "\n";
+	private static function section_title( $title ) {
+		return "\n " . $title . "\n" . str_repeat( '=', 70 ) . "\n";
 	}
 
 	/**
-	 * Format rows of label/value/status arrays
+	 * Convert status row arrays (label/value/status) to simple two-column rows
 	 *
-	 * @param  array  $rows
+	 * @param  array $items Array of arrays with 'label', 'value', and optional 'status' keys
+	 * @return array
+	 */
+	private static function status_rows( $items ) {
+		$rows = array();
+		foreach ( $items as $item ) {
+			$value = $item['value'];
+			if ( isset( $item['status'] ) ) {
+				$value .= $item['status'] ? '  [OK]' : '  [!!]';
+			}
+			$rows[] = array( $item['label'], $value );
+		}
+		return $rows;
+	}
+
+	/**
+	 * Render an ASCII table with borders
+	 *
+	 * @param  array $rows Array of arrays, each with two elements (label, value)
 	 * @return string
 	 */
-	private static function format_rows( $rows ) {
-		$output = '';
-		foreach ( $rows as $row ) {
-			$status = isset( $row['status'] ) ? ( $row['status'] ? '[OK]' : '[!!]' ) : '';
-			$output .= sprintf( "%-30s %-35s %s\n", $row['label'], $row['value'], $status );
+	private static function table( $rows ) {
+		if ( empty( $rows ) ) {
+			return '';
 		}
+
+		// Calculate max column widths
+		$max_left  = 0;
+		$max_right = 0;
+		foreach ( $rows as $row ) {
+			$max_left  = max( $max_left, strlen( $row[0] ) );
+			$max_right = max( $max_right, strlen( $row[1] ) );
+		}
+
+		$divider = sprintf( "+-%s-+-%s-+\n", str_pad( '', $max_left, '-' ), str_pad( '', $max_right, '-' ) );
+		$output  = $divider;
+
+		foreach ( $rows as $row ) {
+			$output .= sprintf( "| %s | %s |\n", str_pad( $row[0], $max_left ), str_pad( $row[1], $max_right ) );
+			$output .= $divider;
+		}
+
 		return $output;
 	}
 }

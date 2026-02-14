@@ -84,13 +84,17 @@ class Ai1wm_Debug_Ajax_Controller {
 
 		$format = isset( $_GET['format'] ) ? sanitize_key( $_GET['format'] ) : 'text';
 
+		// Build file-safe site name from URL
+		$site_name = preg_replace( '/[^a-z0-9\-]/', '-', strtolower( parse_url( site_url(), PHP_URL_HOST ) ) );
+		$site_name = trim( preg_replace( '/-+/', '-', $site_name ), '-' );
+
 		if ( $format === 'json' ) {
 			header( 'Content-Type: application/json' );
-			header( 'Content-Disposition: attachment; filename=servmask-debug-report.json' );
+			header( 'Content-Disposition: attachment; filename=' . $site_name . '-debug-report.json' );
 			echo json_encode( Ai1wm_Debug_Report::generate(), JSON_PRETTY_PRINT );
 		} else {
 			header( 'Content-Type: text/plain' );
-			header( 'Content-Disposition: attachment; filename=servmask-debug-report.txt' );
+			header( 'Content-Disposition: attachment; filename=' . $site_name . '-debug-report.txt' );
 			echo Ai1wm_Debug_Report::generate_text();
 		}
 		exit;

@@ -16,7 +16,9 @@
 		<?php ai1wm_debug_render( 'tabs/' . $current_tab, array( 'ai1wm_active' => $ai1wm_active ) ); ?>
 	</div>
 
-	<div style="margin-top: 20px;">
+	<hr style="margin: 30px 0 20px;" />
+
+	<div>
 		<a href="<?php echo esc_url( admin_url( 'admin-ajax.php?action=ai1wm_debug_download_report&format=text&nonce=' . wp_create_nonce( AI1WM_DEBUG_NONCE ) ) ); ?>"
 		   class="button button-primary" id="ai1wm-debug-download-text">
 			Download Report (Text)
