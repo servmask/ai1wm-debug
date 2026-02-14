@@ -25,11 +25,119 @@
 
 class Ai1wm_Debug_Logs {
 
+	/**
+	 * Discover available log files
+	 *
+	 * @return array
+	 */
 	public static function get_log_files() {
-		return array();
+		$files = array();
+
+		// WordPress debug.log
+		$debug_log = WP_CONTENT_DIR . '/debug.log';
+		if ( file_exists( $debug_log ) ) {
+			$files[] = array(
+				'key'   => 'wp_debug',
+				'label' => 'WordPress Debug Log',
+				'path'  => $debug_log,
+				'size'  => ai1wm_debug_size_format( filesize( $debug_log ), 2 ),
+			);
+		}
+
+		// PHP error_log in ABSPATH
+		$php_error = ABSPATH . 'error_log';
+		if ( file_exists( $php_error ) ) {
+			$files[] = array(
+				'key'   => 'php_error_abspath',
+				'label' => 'PHP Error Log (ABSPATH)',
+				'path'  => $php_error,
+				'size'  => ai1wm_debug_size_format( filesize( $php_error ), 2 ),
+			);
+		}
+
+		// PHP error_log from ini
+		$ini_error_log = ini_get( 'error_log' );
+		if ( $ini_error_log && file_exists( $ini_error_log ) && $ini_error_log !== $php_error ) {
+			$files[] = array(
+				'key'   => 'php_error_ini',
+				'label' => 'PHP Error Log (php.ini)',
+				'path'  => $ini_error_log,
+				'size'  => ai1wm_debug_size_format( filesize( $ini_error_log ), 2 ),
+			);
+		}
+
+		// AI1WM error log
+		if ( defined( 'AI1WM_STORAGE_PATH' ) ) {
+			$ai1wm_error = AI1WM_STORAGE_PATH . '/error.log';
+			if ( file_exists( $ai1wm_error ) ) {
+				$files[] = array(
+					'key'   => 'ai1wm_error',
+					'label' => 'AI1WM Error Log',
+					'path'  => $ai1wm_error,
+					'size'  => ai1wm_debug_size_format( filesize( $ai1wm_error ), 2 ),
+				);
+			}
+		}
+
+		// Plugin's own debug log
+		if ( file_exists( AI1WM_DEBUG_LOG_FILE ) ) {
+			$files[] = array(
+				'key'   => 'plugin_debug',
+				'label' => 'ServMask Debug Log',
+				'path'  => AI1WM_DEBUG_LOG_FILE,
+				'size'  => ai1wm_debug_size_format( filesize( AI1WM_DEBUG_LOG_FILE ), 2 ),
+			);
+		}
+
+		return $files;
 	}
 
-	public static function read_log( $file, $offset = 0, $lines = 100 ) {
-		return array();
+	/**
+	 * Read a log file by key
+	 *
+	 * @param  string $file_key The log file key
+	 * @param  int    $offset   Line offset
+	 * @param  int    $lines    Number of lines to read
+	 * @return array
+	 */
+	public static function read_log( $file_key, $offset = 0, $lines = 100 ) {
+		$files = self::get_log_files();
+		$path  = '';
+
+		foreach ( $files as $file ) {
+			if ( $file['key'] === $file_key ) {
+				$path = $file['path'];
+				break;
+			}
+		}
+
+		if ( empty( $path ) || ! is_readable( $path ) ) {
+			return array(
+				'content'     => '',
+				'total_lines' => 0,
+				'offset'      => 0,
+			);
+		}
+
+		// Read file into lines
+		$all_lines   = file( $path, FILE_IGNORE_NEW_LINES );
+		$total_lines = count( $all_lines );
+
+		// Clamp offset
+		if ( $offset < 0 ) {
+			$offset = max( 0, $total_lines + $offset );
+		}
+		if ( $offset > $total_lines ) {
+			$offset = $total_lines;
+		}
+
+		$slice   = array_slice( $all_lines, $offset, $lines );
+		$content = implode( "\n", $slice );
+
+		return array(
+			'content'     => $content,
+			'total_lines' => $total_lines,
+			'offset'      => $offset,
+		);
 	}
 }
