@@ -8,7 +8,9 @@
 		<tr>
 			<th>Extension</th>
 			<th>Status</th>
-			<th>Version</th>
+			<th>Installed Version</th>
+			<th>Latest Version</th>
+			<th>Up to Date</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -21,6 +23,16 @@
 					</span>
 				</td>
 				<td><?php echo esc_html( $ext['version'] ); ?></td>
+				<td><?php echo esc_html( ! empty( $ext['latest'] ) ? $ext['latest'] : 'N/A' ); ?></td>
+				<td>
+					<?php if ( $ext['installed'] && ! empty( $ext['latest'] ) ) : ?>
+						<span class="ai1wm-debug-status ai1wm-debug-status-<?php echo $ext['up_to_date'] ? 'ok' : 'warn'; ?>">
+							<?php echo $ext['up_to_date'] ? 'Yes' : 'Outdated'; ?>
+						</span>
+					<?php else : ?>
+						-
+					<?php endif; ?>
+				</td>
 			</tr>
 		<?php endforeach; ?>
 	</tbody>

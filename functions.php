@@ -195,3 +195,50 @@ function ai1wm_debug_normalize_path( $path ) {
 function ai1wm_debug_current_user_can() {
 	return current_user_can( 'manage_options' ) || current_user_can( AI1WM_DEBUG_VIEW_CAPABILITY );
 }
+
+/**
+ * Get the latest version of the base plugin from wp.org
+ *
+ * @return string
+ */
+function ai1wm_debug_get_base_plugin_latest_version() {
+	$plugin_info = wp_remote_get( 'https://api.wordpress.org/plugins/info/1.0/all-in-one-wp-migration' );
+
+	if ( is_array( $plugin_info ) && ! is_wp_error( $plugin_info ) ) {
+		$body = @unserialize( wp_remote_retrieve_body( $plugin_info ) );
+		if ( $body && isset( $body->version ) ) {
+			return $body->version;
+		}
+	}
+
+	return '';
+}
+
+/**
+ * Get the latest version of an extension from the update server
+ *
+ * @param  string $about_url The extension's about/update URL
+ * @return string
+ */
+function ai1wm_debug_get_extension_latest_version( $about_url ) {
+	if ( empty( $about_url ) ) {
+		return '';
+	}
+
+	if ( strpos( $about_url, 'http' ) === 0 ) {
+		$url = $about_url;
+	} else {
+		$url = sprintf( 'https://plugin-updates.wp-migration.com/%s.json', $about_url );
+	}
+
+	$response = wp_remote_get( $url );
+
+	if ( is_array( $response ) && ! is_wp_error( $response ) ) {
+		$body = json_decode( wp_remote_retrieve_body( $response ) );
+		if ( $body && isset( $body->version ) ) {
+			return $body->version;
+		}
+	}
+
+	return '';
+}

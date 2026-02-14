@@ -115,33 +115,63 @@ class Ai1wm_Debug_Plugins {
 	}
 
 	/**
-	 * Detect AI1WM ecosystem extensions
+	 * Detect AI1WM ecosystem extensions with version comparison
 	 *
 	 * @return array
 	 */
 	public static function get_ai1wm_ecosystem() {
 		$ecosystem = array();
-		$map       = ai1wm_debug_get_extension_map();
 
 		// Base plugin
+		$base_installed = defined( 'AI1WM_PLUGIN_NAME' );
+		$base_version   = defined( 'AI1WM_VERSION' ) ? AI1WM_VERSION : 'N/A';
+		$base_latest    = $base_installed ? ai1wm_debug_get_base_plugin_latest_version() : '';
+
 		$ecosystem[] = array(
 			'name'      => 'All-in-One WP Migration (Base)',
 			'constant'  => 'AI1WM_PLUGIN_NAME',
-			'installed' => defined( 'AI1WM_PLUGIN_NAME' ),
-			'version'   => defined( 'AI1WM_VERSION' ) ? AI1WM_VERSION : 'N/A',
+			'installed' => $base_installed,
+			'version'   => $base_version,
+			'latest'    => $base_latest,
+			'up_to_date' => empty( $base_latest ) || $base_latest === $base_version,
 		);
 
-		// Extensions
-		foreach ( $map as $constant => $name ) {
-			$installed      = defined( $constant );
-			$version_const  = str_replace( '_PLUGIN_NAME', '_VERSION', $constant );
+		// Use Ai1wm_Extensions::get() when AI1WM is active for accurate data
+		if ( $base_installed && class_exists( 'Ai1wm_Extensions' ) ) {
+			foreach ( Ai1wm_Extensions::get() as $extension ) {
+				$latest = ai1wm_debug_get_extension_latest_version( $extension['about'] );
 
-			$ecosystem[] = array(
-				'name'      => $name,
-				'constant'  => $constant,
-				'installed' => $installed,
-				'version'   => $installed && defined( $version_const ) ? constant( $version_const ) : 'N/A',
-			);
+				$ecosystem[] = array(
+					'name'       => $extension['title'],
+					'constant'   => '',
+					'installed'  => true,
+					'version'    => $extension['version'],
+					'latest'     => $latest,
+					'up_to_date' => empty( $latest ) || $latest === $extension['version'],
+				);
+			}
+		}
+
+		// Also show non-installed extensions from our known map
+		$map = ai1wm_debug_get_extension_map();
+		foreach ( $map as $constant => $name ) {
+			$installed = defined( $constant );
+
+			// Skip if already covered by Ai1wm_Extensions::get() above
+			if ( $installed && $base_installed && class_exists( 'Ai1wm_Extensions' ) ) {
+				continue;
+			}
+
+			if ( ! $installed ) {
+				$ecosystem[] = array(
+					'name'       => $name,
+					'constant'   => $constant,
+					'installed'  => false,
+					'version'    => 'N/A',
+					'latest'     => '',
+					'up_to_date' => true,
+				);
+			}
 		}
 
 		return $ecosystem;

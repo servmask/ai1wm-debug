@@ -104,11 +104,15 @@ class Ai1wm_Debug_Report {
 
 		$output .= self::section_header( 'AI1WM Ecosystem' );
 		foreach ( $plugins['ai1wm_ecosystem'] as $ext ) {
+			$version_info = $ext['version'];
+			if ( $ext['installed'] && ! empty( $ext['latest'] ) ) {
+				$version_info = sprintf( 'Installed: %s (Latest: %s)%s', $ext['version'], $ext['latest'], $ext['up_to_date'] ? '' : ' [OUTDATED]' );
+			}
 			$output .= sprintf(
 				"%-40s %-15s %s\n",
 				$ext['name'],
 				$ext['installed'] ? 'Installed' : 'Not Installed',
-				$ext['version']
+				$version_info
 			);
 		}
 
