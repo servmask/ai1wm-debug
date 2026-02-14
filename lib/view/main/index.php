@@ -13,7 +13,7 @@
 	</nav>
 
 	<div id="ai1wm-debug-tab-content" style="margin-top: 15px;">
-		<?php ai1wm_debug_render( 'tabs/' . $current_tab, array( 'ai1wm_active' => $ai1wm_active ) ); ?>
+		<?php ai1wm_debug_render( 'tabs/' . $current_tab, array_merge( array( 'ai1wm_active' => $ai1wm_active ), $tab_args ) ); ?>
 	</div>
 
 	<hr style="margin: 30px 0 20px;" />

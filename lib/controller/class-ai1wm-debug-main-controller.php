@@ -259,15 +259,29 @@ class Ai1wm_Debug_Main_Controller {
 			$tabs['audit']   = 'Audit Log';
 		}
 
+		$tabs['help'] = 'Help';
+
 		// Validate current tab
 		if ( ! isset( $tabs[$current_tab] ) ) {
 			$current_tab = 'environment';
 		}
 
+		// Tab-specific data
+		$tab_args = array();
+
+		if ( $current_tab === 'help' ) {
+			if ( Ai1wm_Debug_Audit::is_support_session() ) {
+				$tab_args['markdown_file'] = AI1WM_DEBUG_PATH . DIRECTORY_SEPARATOR . 'DEBUG-GUIDE.md';
+			} else {
+				$tab_args['markdown_file'] = AI1WM_DEBUG_PATH . DIRECTORY_SEPARATOR . 'USER-GUIDE.md';
+			}
+		}
+
 		ai1wm_debug_render( 'main/index', array(
-			'tabs'        => $tabs,
-			'current_tab' => $current_tab,
+			'tabs'         => $tabs,
+			'current_tab'  => $current_tab,
 			'ai1wm_active' => $ai1wm_active,
+			'tab_args'     => $tab_args,
 		) );
 	}
 

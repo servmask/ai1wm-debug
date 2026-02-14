@@ -84,3 +84,7 @@ require_once AI1WM_DEBUG_MODEL_PATH .
 require_once AI1WM_DEBUG_MODEL_PATH .
 	DIRECTORY_SEPARATOR .
 	'class-ai1wm-debug-audit.php';
+
+require_once AI1WM_DEBUG_MODEL_PATH .
+	DIRECTORY_SEPARATOR .
+	'class-ai1wm-debug-markdown.php';
