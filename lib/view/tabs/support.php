@@ -2,9 +2,9 @@
 
 <h2>Support Access</h2>
 
-<?php if ( ! current_user_can( 'manage_options' ) ) : ?>
+<?php if ( Ai1wm_Debug_Audit::is_support_session() || ! current_user_can( 'manage_options' ) ) : ?>
 	<div class="notice notice-warning inline">
-		<p>Only administrators can manage support access tokens.</p>
+		<p>Only site administrators can manage support access tokens.</p>
 	</div>
 <?php else : ?>
 	<h3>Grant Support Access</h3>

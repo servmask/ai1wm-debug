@@ -37,7 +37,7 @@ class Ai1wm_Debug_Main_Controller {
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_scripts_and_styles' ), 25 );
 		add_action( 'admin_init', array( $this, 'setup_storage' ) );
 		add_action( 'admin_init', array( $this, 'router' ) );
-		add_action( 'admin_init', array( $this, 'init_audit' ) );
+		add_action( 'admin_init', array( 'Ai1wm_Debug_Audit', 'init' ), 1 );
 
 		// Exclude this plugin from AI1WM exports/imports
 		add_filter( 'ai1wm_exclude_plugins_from_export', array( $this, 'exclude_plugin' ) );
@@ -61,13 +61,6 @@ class Ai1wm_Debug_Main_Controller {
 	public function init_logger() {
 		Ai1wm_Debug_Logger::init();
 		Ai1wm_Debug_Filters::init();
-	}
-
-	/**
-	 * Initialize audit logging for support sessions
-	 */
-	public function init_audit() {
-		Ai1wm_Debug_Audit::init();
 	}
 
 	/**
@@ -260,9 +253,11 @@ class Ai1wm_Debug_Main_Controller {
 			$tabs['operations'] = 'Operations';
 		}
 
-		// Support tabs always available
-		$tabs['support'] = 'Support';
-		$tabs['audit']   = 'Audit Log';
+		// Support tabs only for real administrators (not generated support users)
+		if ( ! Ai1wm_Debug_Audit::is_support_session() ) {
+			$tabs['support'] = 'Support';
+			$tabs['audit']   = 'Audit Log';
+		}
 
 		// Validate current tab
 		if ( ! isset( $tabs[$current_tab] ) ) {

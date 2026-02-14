@@ -87,6 +87,9 @@ class Ai1wm_Debug_Access {
 		);
 		Ai1wm_Debug_Config::set( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, $tokens );
 
+		// Log token creation
+		Ai1wm_Debug_Audit::log_action( $token, 'token_created', 'Access level: ' . $level . ', user: ' . $username );
+
 		// Build the login URL
 		$url = add_query_arg( 'ai1wm_debug_token', $token, site_url( '/' ) );
 
@@ -141,6 +144,9 @@ class Ai1wm_Debug_Access {
 
 		$data = $tokens[$token];
 
+		// Log revocation
+		Ai1wm_Debug_Audit::log_action( $token, 'token_revoked', 'User: ' . $data['username'] );
+
 		// Delete the temporary user
 		if ( ! empty( $data['user_id'] ) ) {
 			self::delete_support_user( $data['user_id'] );
@@ -158,8 +164,11 @@ class Ai1wm_Debug_Access {
 		$tokens = Ai1wm_Debug_Config::get( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, array() );
 
 		foreach ( $tokens as $token => $data ) {
-			if ( ! empty( $data['active'] ) && ! empty( $data['user_id'] ) ) {
-				self::delete_support_user( $data['user_id'] );
+			if ( ! empty( $data['active'] ) ) {
+				Ai1wm_Debug_Audit::log_action( $token, 'token_revoked', 'User: ' . $data['username'] );
+				if ( ! empty( $data['user_id'] ) ) {
+					self::delete_support_user( $data['user_id'] );
+				}
 			}
 		}
 

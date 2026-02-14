@@ -2,9 +2,9 @@
 
 <h2>Audit Log</h2>
 
-<?php if ( ! current_user_can( 'manage_options' ) ) : ?>
+<?php if ( Ai1wm_Debug_Audit::is_support_session() || ! current_user_can( 'manage_options' ) ) : ?>
 	<div class="notice notice-warning inline">
-		<p>Only administrators can view the audit log.</p>
+		<p>Only site administrators can view the audit log.</p>
 	</div>
 <?php else : ?>
 	<?php $session_tokens = Ai1wm_Debug_Audit::get_session_tokens(); ?>

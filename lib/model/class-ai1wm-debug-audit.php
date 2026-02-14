@@ -79,7 +79,18 @@ class Ai1wm_Debug_Audit {
 	}
 
 	/**
-	 * Log an action to the audit file
+	 * Get the audit file path for a token
+	 *
+	 * @param  string $token Full token or 8-char prefix
+	 * @return string
+	 */
+	public static function get_audit_file( $token ) {
+		$prefix = substr( $token, 0, 8 );
+		return AI1WM_DEBUG_LOGS_PATH . DIRECTORY_SEPARATOR . 'audit-' . $prefix . '.php';
+	}
+
+	/**
+	 * Log an action to the per-token audit file
 	 *
 	 * @param string $token
 	 * @param string $action
@@ -88,23 +99,22 @@ class Ai1wm_Debug_Audit {
 	public static function log_action( $token, $action, $details = '' ) {
 		$user = wp_get_current_user();
 		$username = $user && $user->ID ? $user->user_login : 'unknown';
-		$masked   = substr( $token, 0, 8 ) . '...';
 
 		$line = sprintf(
-			"[%s] [%s] [%s] [%s] %s\n",
+			"[%s] [%s] [%s] %s\n",
 			date( 'Y-m-d H:i:s' ),
-			$masked,
 			$username,
 			$action,
 			$details
 		);
 
-		// Add PHP guard on first write
-		if ( ! file_exists( AI1WM_DEBUG_AUDIT_FILE ) ) {
-			@file_put_contents( AI1WM_DEBUG_AUDIT_FILE, "<?php exit; ?>\n", LOCK_EX );
+		$file = self::get_audit_file( $token );
+
+		if ( ! file_exists( $file ) ) {
+			$line = "<?php exit; ?>\n" . $line;
 		}
 
-		@file_put_contents( AI1WM_DEBUG_AUDIT_FILE, $line, FILE_APPEND | LOCK_EX );
+		@file_put_contents( $file, $line, FILE_APPEND | LOCK_EX );
 	}
 
 	// Hook callbacks
@@ -193,21 +203,19 @@ class Ai1wm_Debug_Audit {
 	}
 
 	/**
-	 * Get audit entries, optionally filtered by token
+	 * Read lines from an audit file, stripping the PHP guard
 	 *
-	 * @param  string $token  Filter by token prefix (optional)
-	 * @param  int    $offset
-	 * @param  int    $limit
+	 * @param  string $file
 	 * @return array
 	 */
-	public static function get_entries( $token = '', $offset = 0, $limit = 100 ) {
-		if ( ! file_exists( AI1WM_DEBUG_AUDIT_FILE ) ) {
-			return array( 'entries' => array(), 'total' => 0 );
+	private static function read_audit_file( $file ) {
+		if ( ! file_exists( $file ) ) {
+			return array();
 		}
 
-		$lines = file( AI1WM_DEBUG_AUDIT_FILE, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
+		$lines = file( $file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
 		if ( ! $lines ) {
-			return array( 'entries' => array(), 'total' => 0 );
+			return array();
 		}
 
 		// Strip PHP guard line
@@ -215,19 +223,28 @@ class Ai1wm_Debug_Audit {
 			array_shift( $lines );
 		}
 
-		// Reverse so newest first
-		$lines = array_reverse( $lines );
+		return $lines;
+	}
 
-		// Filter by token if provided
+	/**
+	 * Get audit entries for a token or all tokens
+	 *
+	 * @param  string $token  Token prefix (optional, empty for all)
+	 * @param  int    $offset
+	 * @param  int    $limit
+	 * @return array
+	 */
+	public static function get_entries( $token = '', $offset = 0, $limit = 100 ) {
 		if ( ! empty( $token ) ) {
-			$token_prefix = substr( $token, 0, 8 );
-			$filtered     = array();
-			foreach ( $lines as $line ) {
-				if ( strpos( $line, '[' . $token_prefix ) !== false ) {
-					$filtered[] = $line;
-				}
+			// Single token file
+			$lines = self::read_audit_file( self::get_audit_file( $token ) );
+		} else {
+			// All audit files
+			$lines = array();
+			$files = self::get_audit_files();
+			foreach ( $files as $file ) {
+				$lines = array_merge( $lines, self::read_audit_file( $file ) );
 			}
-			$lines = $filtered;
 		}
 
 		$total   = count( $lines );
@@ -240,31 +257,44 @@ class Ai1wm_Debug_Audit {
 	}
 
 	/**
-	 * Get unique tokens from audit log
+	 * Get all audit files in storage
+	 *
+	 * @return array File paths
+	 */
+	private static function get_audit_files() {
+		$files = array();
+		$dir   = @opendir( AI1WM_DEBUG_LOGS_PATH );
+
+		if ( $dir ) {
+			while ( ( $entry = readdir( $dir ) ) !== false ) {
+				if ( preg_match( '/^audit-[a-f0-9]{8}\.php$/', $entry ) ) {
+					$files[] = AI1WM_DEBUG_LOGS_PATH . DIRECTORY_SEPARATOR . $entry;
+				}
+			}
+			closedir( $dir );
+		}
+
+		return $files;
+	}
+
+	/**
+	 * Get token prefixes from audit file names
 	 *
 	 * @return array
 	 */
 	public static function get_session_tokens() {
-		if ( ! file_exists( AI1WM_DEBUG_AUDIT_FILE ) ) {
-			return array();
-		}
-
-		$lines  = file( AI1WM_DEBUG_AUDIT_FILE, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
 		$tokens = array();
+		$dir    = @opendir( AI1WM_DEBUG_LOGS_PATH );
 
-		if ( $lines ) {
-			// Strip PHP guard line
-			if ( ! empty( $lines[0] ) && strpos( $lines[0], '<?php' ) === 0 ) {
-				array_shift( $lines );
-			}
-
-			foreach ( $lines as $line ) {
-				if ( preg_match( '/\[(\w{8})\.\.\.\]/', $line, $matches ) ) {
-					$tokens[$matches[1]] = true;
+		if ( $dir ) {
+			while ( ( $entry = readdir( $dir ) ) !== false ) {
+				if ( preg_match( '/^audit-([a-f0-9]{8})\.php$/', $entry, $matches ) ) {
+					$tokens[] = $matches[1];
 				}
 			}
+			closedir( $dir );
 		}
 
-		return array_keys( $tokens );
+		return $tokens;
 	}
 }
