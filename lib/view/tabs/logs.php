@@ -19,7 +19,7 @@
 				</option>
 			<?php endforeach; ?>
 		</select>
-		<button type="button" class="button" id="ai1wm-debug-log-load">Load</button>
+		<button type="button" class="button" id="ai1wm-debug-log-load" disabled>Load</button>
 	</p>
 	<p id="ai1wm-debug-log-info" style="display:none;">
 		<button type="button" class="button" id="ai1wm-debug-log-older" style="display:none;">Older</button>

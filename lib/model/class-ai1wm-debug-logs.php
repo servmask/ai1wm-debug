@@ -66,9 +66,9 @@ class Ai1wm_Debug_Logs {
 			);
 		}
 
-		// AI1WM error log
-		if ( defined( 'AI1WM_STORAGE_PATH' ) ) {
-			$ai1wm_error = AI1WM_STORAGE_PATH . '/error.log';
+		// AI1WM error logs (static error.log + per-nonce error-log-*.log)
+		if ( defined( 'AI1WM_STORAGE_PATH' ) && is_dir( AI1WM_STORAGE_PATH ) ) {
+			$ai1wm_error = AI1WM_STORAGE_PATH . DIRECTORY_SEPARATOR . 'error.log';
 			if ( file_exists( $ai1wm_error ) ) {
 				$files[] = array(
 					'key'   => 'ai1wm_error',
@@ -76,6 +76,22 @@ class Ai1wm_Debug_Logs {
 					'path'  => $ai1wm_error,
 					'size'  => ai1wm_debug_size_format( filesize( $ai1wm_error ), 2 ),
 				);
+			}
+
+			$dir = @opendir( AI1WM_STORAGE_PATH );
+			if ( $dir ) {
+				while ( ( $entry = readdir( $dir ) ) !== false ) {
+					if ( preg_match( '/^error-log-.+\.log$/', $entry ) ) {
+						$path = AI1WM_STORAGE_PATH . DIRECTORY_SEPARATOR . $entry;
+						$files[] = array(
+							'key'   => 'ai1wm_' . sanitize_key( $entry ),
+							'label' => 'AI1WM ' . $entry,
+							'path'  => $path,
+							'size'  => ai1wm_debug_size_format( filesize( $path ), 2 ),
+						);
+					}
+				}
+				closedir( $dir );
 			}
 		}
 
