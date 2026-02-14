@@ -46,7 +46,7 @@
 	</tbody>
 </table>
 
-<h2>Database Tables</h2>
+<h2>Database Tables (<?php echo esc_html( $data['prefix'] ); ?>*)</h2>
 <p>
 	<button type="button" class="button" id="ai1wm-debug-load-tables">Load Tables</button>
 	<span id="ai1wm-debug-tables-loading" style="display:none;">Loading...</span>
@@ -65,3 +65,22 @@
 	<tbody>
 	</tbody>
 </table>
+
+<div id="ai1wm-debug-non-prefixed-wrapper" style="display:none; margin-top: 2em;">
+	<h2>Non-Prefixed Tables</h2>
+	<p class="description">Tables that do not use the WordPress prefix <code><?php echo esc_html( $data['prefix'] ); ?></code>. These may belong to other applications or old WordPress installations.</p>
+	<table class="widefat striped ai1wm-debug-table" id="ai1wm-debug-non-prefixed-list">
+		<thead>
+			<tr>
+				<th>Table Name</th>
+				<th>Engine</th>
+				<th>Rows</th>
+				<th>Data Size</th>
+				<th>Index Size</th>
+				<th>Total Size</th>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+</div>

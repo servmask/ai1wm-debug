@@ -98,7 +98,8 @@ class Ai1wm_Debug_Database {
 	public static function get_tables() {
 		global $wpdb;
 
-		$tables = array();
+		$prefixed     = array();
+		$non_prefixed = array();
 
 		$results = $wpdb->get_results( $wpdb->prepare(
 			"SELECT
@@ -116,7 +117,7 @@ class Ai1wm_Debug_Database {
 
 		if ( $results ) {
 			foreach ( $results as $row ) {
-				$tables[] = array(
+				$table = array(
 					'name'       => $row['name'],
 					'engine'     => $row['engine'],
 					'rows'       => intval( $row['rows'] ),
@@ -124,9 +125,18 @@ class Ai1wm_Debug_Database {
 					'index_size' => ai1wm_debug_size_format( $row['index_size'], 2 ),
 					'total_size' => ai1wm_debug_size_format( $row['total_size'], 2 ),
 				);
+
+				if ( strpos( $row['name'], $wpdb->prefix ) === 0 ) {
+					$prefixed[] = $table;
+				} else {
+					$non_prefixed[] = $table;
+				}
 			}
 		}
 
-		return $tables;
+		return array(
+			'prefixed'     => $prefixed,
+			'non_prefixed' => $non_prefixed,
+		);
 	}
 }
