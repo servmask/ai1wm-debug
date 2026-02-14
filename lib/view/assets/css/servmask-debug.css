@@ -1,1 +1,91 @@
 /* ServMask Debug - Styles */
+
+/* Status indicators */
+.ai1wm-debug-status {
+	display: inline-block;
+	padding: 2px 8px;
+	border-radius: 3px;
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1.4;
+}
+
+.ai1wm-debug-status-ok {
+	background: #d4edda;
+	color: #155724;
+}
+
+.ai1wm-debug-status-warn {
+	background: #fff3cd;
+	color: #856404;
+}
+
+.ai1wm-debug-status-error {
+	background: #f8d7da;
+	color: #721c24;
+}
+
+.ai1wm-debug-status-neutral {
+	background: #e2e3e5;
+	color: #383d41;
+}
+
+/* Tables */
+.ai1wm-debug-table {
+	margin-top: 10px;
+}
+
+.ai1wm-debug-table th {
+	font-weight: 600;
+}
+
+.ai1wm-debug-table td code {
+	background: #f0f0f1;
+	padding: 2px 6px;
+	font-size: 12px;
+}
+
+/* Log viewer */
+.ai1wm-debug-log-viewer {
+	background: #1e1e1e;
+	color: #d4d4d4;
+	padding: 15px;
+	font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+	font-size: 12px;
+	line-height: 1.5;
+	max-height: 500px;
+	overflow: auto;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	border: 1px solid #ccd0d4;
+	border-radius: 4px;
+}
+
+/* Realtime controls */
+#ai1wm-debug-realtime-controls {
+	margin-bottom: 10px;
+}
+
+#ai1wm-debug-realtime-controls label {
+	margin-right: 15px;
+}
+
+/* Access URL input */
+#ai1wm-debug-access-url {
+	font-family: monospace;
+	margin-bottom: 5px;
+}
+
+/* Tab content spacing */
+#ai1wm-debug-tab-content h2:first-child {
+	margin-top: 0;
+}
+
+#ai1wm-debug-tab-content h3 {
+	margin-top: 20px;
+}
+
+/* Notice inline adjustments */
+#ai1wm-debug-tab-content .notice.inline {
+	margin: 10px 0;
+}
