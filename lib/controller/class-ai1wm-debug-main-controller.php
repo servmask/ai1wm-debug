@@ -37,6 +37,10 @@ class Ai1wm_Debug_Main_Controller {
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_scripts_and_styles' ), 25 );
 		add_action( 'admin_init', array( $this, 'setup_storage' ) );
 		add_action( 'admin_init', array( $this, 'router' ) );
+		add_action( 'admin_init', array( $this, 'init_audit' ) );
+
+		// Support access token login handler (runs on init, before admin)
+		Ai1wm_Debug_Access::init();
 
 		if ( is_multisite() ) {
 			add_action( 'network_admin_menu', array( $this, 'admin_menu' ), 20 );
@@ -50,6 +54,13 @@ class Ai1wm_Debug_Main_Controller {
 	 */
 	public function init_logger() {
 		Ai1wm_Debug_Logger::init();
+	}
+
+	/**
+	 * Initialize audit logging for support sessions
+	 */
+	public function init_audit() {
+		Ai1wm_Debug_Audit::init();
 	}
 
 	/**
