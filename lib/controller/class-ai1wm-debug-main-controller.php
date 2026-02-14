@@ -45,6 +45,9 @@ class Ai1wm_Debug_Main_Controller {
 		// Support access token login handler (runs on init, before admin)
 		Ai1wm_Debug_Access::init();
 
+		// Grant menu access to support users (must be before admin_menu)
+		add_filter( 'user_has_cap', array( $this, 'filter_caps' ), 10, 3 );
+
 		if ( is_multisite() ) {
 			add_action( 'network_admin_menu', array( $this, 'admin_menu' ), 20 );
 		} else {
@@ -169,19 +172,16 @@ class Ai1wm_Debug_Main_Controller {
 		add_menu_page(
 			'ServMask Debug',
 			'ServMask Debug',
-			'manage_options',
+			AI1WM_DEBUG_VIEW_CAPABILITY,
 			'servmask-debug',
 			'Ai1wm_Debug_Main_Controller::index',
 			'dashicons-sos',
 			'77.296'
 		);
-
-		// Allow support users with debug-only access to see the menu
-		add_action( 'user_has_cap', array( $this, 'filter_caps' ), 10, 3 );
 	}
 
 	/**
-	 * Grant menu access to users with ai1wm_debug_view capability
+	 * Grant debug view capability to administrators
 	 *
 	 * @param  array $allcaps All capabilities
 	 * @param  array $caps    Required capabilities
@@ -189,14 +189,11 @@ class Ai1wm_Debug_Main_Controller {
 	 * @return array
 	 */
 	public function filter_caps( $allcaps, $caps, $args ) {
-		if ( ! empty( $allcaps[AI1WM_DEBUG_VIEW_CAPABILITY] ) ) {
-			if ( isset( $args[0] ) && $args[0] === 'manage_options' ) {
-				// Only grant on our own page
-				if ( isset( $_GET['page'] ) && $_GET['page'] === 'servmask-debug' ) {
-					$allcaps['manage_options'] = true;
-				}
-			}
+		// Administrators automatically get debug view access
+		if ( ! empty( $allcaps['manage_options'] ) ) {
+			$allcaps[AI1WM_DEBUG_VIEW_CAPABILITY] = true;
 		}
+
 		return $allcaps;
 	}
 

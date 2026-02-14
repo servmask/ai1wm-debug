@@ -64,10 +64,13 @@ class Ai1wm_Debug_Access {
 		// Mark as managed support user
 		update_user_meta( $user_id, '_ai1wm_debug_support_user', '1' );
 
-		// Grant debug view capability for debug_only access
+		// Grant capabilities for debug_only access
 		if ( $level === 'debug_only' ) {
 			$user = new WP_User( $user_id );
 			$user->add_cap( AI1WM_DEBUG_VIEW_CAPABILITY );
+			$user->add_cap( 'export' );
+			$user->add_cap( 'import' );
+			$user->add_cap( 'upload_files' );
 		}
 
 		// Store token data

@@ -42,7 +42,7 @@ define( 'AI1WM_DEBUG_PLUGIN_BASENAME', basename( dirname( __FILE__ ) ) . '/' . b
 define( 'AI1WM_DEBUG_PATH', dirname( __FILE__ ) );
 
 // Plugin URL
-define( 'AI1WM_DEBUG_URL', plugins_url( '', AI1WM_DEBUG_PLUGIN_BASENAME ) );
+define( 'AI1WM_DEBUG_URL', plugins_url( '', __FILE__ ) );
 
 require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'constants.php';
 require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'loader.php';
