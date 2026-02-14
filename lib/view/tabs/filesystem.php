@@ -3,6 +3,7 @@
 <?php $data = Ai1wm_Debug_Filesystem::get_data(); ?>
 
 <h2>Key Directories</h2>
+<p>Process user:group — <strong><?php echo esc_html( $data['process_user'] . ':' . $data['process_group'] ); ?></strong></p>
 <table class="widefat striped ai1wm-debug-table">
 	<thead>
 		<tr>
@@ -31,8 +32,16 @@
 					</span>
 				</td>
 				<td><code><?php echo esc_html( $dir['perms'] ); ?></code></td>
-				<td><?php echo esc_html( $dir['owner'] ); ?></td>
-				<td><?php echo esc_html( $dir['group'] ); ?></td>
+				<td>
+					<span class="ai1wm-debug-status ai1wm-debug-status-<?php echo $dir['owner_match'] ? 'ok' : 'warn'; ?>">
+						<?php echo esc_html( $dir['owner'] ); ?>
+					</span>
+				</td>
+				<td>
+					<span class="ai1wm-debug-status ai1wm-debug-status-<?php echo $dir['group_match'] ? 'ok' : 'warn'; ?>">
+						<?php echo esc_html( $dir['group'] ); ?>
+					</span>
+				</td>
 			</tr>
 		<?php endforeach; ?>
 	</tbody>

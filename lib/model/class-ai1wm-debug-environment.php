@@ -265,22 +265,16 @@ class Ai1wm_Debug_Environment {
 		);
 
 		// POSIX info
-		if ( function_exists( 'posix_getpwuid' ) && function_exists( 'posix_geteuid' ) ) {
-			$user_info = posix_getpwuid( posix_geteuid() );
-			$data[] = array(
-				'label'  => 'Process User',
-				'value'  => $user_info ? $user_info['name'] : 'Unknown',
-				'status' => true,
-			);
-		}
-		if ( function_exists( 'posix_getgrgid' ) && function_exists( 'posix_getegid' ) ) {
-			$group_info = posix_getgrgid( posix_getegid() );
-			$data[] = array(
-				'label'  => 'Process Group',
-				'value'  => $group_info ? $group_info['name'] : 'Unknown',
-				'status' => true,
-			);
-		}
+		$data[] = array(
+			'label'  => 'Process User',
+			'value'  => ai1wm_debug_get_process_user(),
+			'status' => true,
+		);
+		$data[] = array(
+			'label'  => 'Process Group',
+			'value'  => ai1wm_debug_get_process_group(),
+			'status' => true,
+		);
 
 		return $data;
 	}

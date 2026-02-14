@@ -197,6 +197,72 @@ function ai1wm_debug_current_user_can() {
 }
 
 /**
+ * Check if POSIX functions are available
+ *
+ * @return boolean
+ */
+function ai1wm_debug_posix_available() {
+	return function_exists( 'posix_getpwuid' )
+		&& function_exists( 'posix_geteuid' )
+		&& function_exists( 'posix_getgrgid' )
+		&& function_exists( 'posix_getegid' );
+}
+
+/**
+ * Get the PHP process user name
+ *
+ * @return string
+ */
+function ai1wm_debug_get_process_user() {
+	if ( ! ai1wm_debug_posix_available() ) {
+		return 'N/A';
+	}
+	$info = posix_getpwuid( posix_geteuid() );
+	return $info ? $info['name'] : 'Unknown';
+}
+
+/**
+ * Get the PHP process group name
+ *
+ * @return string
+ */
+function ai1wm_debug_get_process_group() {
+	if ( ! ai1wm_debug_posix_available() ) {
+		return 'N/A';
+	}
+	$info = posix_getgrgid( posix_getegid() );
+	return $info ? $info['name'] : 'Unknown';
+}
+
+/**
+ * Get the owner name of a file/directory
+ *
+ * @param  string $path
+ * @return string
+ */
+function ai1wm_debug_get_file_owner( $path ) {
+	if ( ! ai1wm_debug_posix_available() ) {
+		return 'N/A';
+	}
+	$info = posix_getpwuid( fileowner( $path ) );
+	return $info ? $info['name'] : fileowner( $path );
+}
+
+/**
+ * Get the group name of a file/directory
+ *
+ * @param  string $path
+ * @return string
+ */
+function ai1wm_debug_get_file_group( $path ) {
+	if ( ! ai1wm_debug_posix_available() ) {
+		return 'N/A';
+	}
+	$info = posix_getgrgid( filegroup( $path ) );
+	return $info ? $info['name'] : filegroup( $path );
+}
+
+/**
  * Get the latest version of the base plugin from wp.org
  *
  * @return string

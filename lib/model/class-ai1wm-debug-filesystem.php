@@ -32,9 +32,11 @@ class Ai1wm_Debug_Filesystem {
 	 */
 	public static function get_data() {
 		return array(
-			'directories' => self::get_directories(),
-			'disk'        => self::get_disk_space(),
-			'temp'        => self::get_temp_dir(),
+			'directories'   => self::get_directories(),
+			'disk'          => self::get_disk_space(),
+			'temp'          => self::get_temp_dir(),
+			'process_user'  => ai1wm_debug_get_process_user(),
+			'process_group' => ai1wm_debug_get_process_group(),
 		);
 	}
 
@@ -83,6 +85,9 @@ class Ai1wm_Debug_Filesystem {
 			);
 		}
 
+		$process_user  = ai1wm_debug_get_process_user();
+		$process_group = ai1wm_debug_get_process_group();
+
 		$result = array();
 		foreach ( $dirs as $dir ) {
 			$path   = $dir['path'];
@@ -96,15 +101,17 @@ class Ai1wm_Debug_Filesystem {
 				'perms'    => $exists ? substr( sprintf( '%o', fileperms( $path ) ), -4 ) : 'N/A',
 			);
 
-			// Ownership (POSIX only)
-			if ( $exists && function_exists( 'posix_getpwuid' ) ) {
-				$owner = posix_getpwuid( fileowner( $path ) );
-				$group = posix_getgrgid( filegroup( $path ) );
-				$entry['owner'] = $owner ? $owner['name'] : fileowner( $path );
-				$entry['group'] = $group ? $group['name'] : filegroup( $path );
+			// Ownership
+			if ( $exists ) {
+				$entry['owner'] = ai1wm_debug_get_file_owner( $path );
+				$entry['group'] = ai1wm_debug_get_file_group( $path );
+				$entry['owner_match'] = ( $entry['owner'] === $process_user );
+				$entry['group_match'] = ( $entry['group'] === $process_group );
 			} else {
 				$entry['owner'] = 'N/A';
 				$entry['group'] = 'N/A';
+				$entry['owner_match'] = true;
+				$entry['group_match'] = true;
 			}
 
 			$result[] = $entry;
