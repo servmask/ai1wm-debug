@@ -33,6 +33,7 @@ class Ai1wm_Debug_Main_Controller {
 	 * Register hooks
 	 */
 	private function activate_actions() {
+		add_action( 'plugins_loaded', array( $this, 'init_logger' ), 20 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_scripts_and_styles' ), 25 );
 		add_action( 'admin_init', array( $this, 'setup_storage' ) );
 		add_action( 'admin_init', array( $this, 'router' ) );
@@ -42,6 +43,13 @@ class Ai1wm_Debug_Main_Controller {
 		} else {
 			add_action( 'admin_menu', array( $this, 'admin_menu' ), 20 );
 		}
+	}
+
+	/**
+	 * Initialize the real-time logger
+	 */
+	public function init_logger() {
+		Ai1wm_Debug_Logger::init();
 	}
 
 	/**
