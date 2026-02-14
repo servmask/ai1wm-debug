@@ -23,71 +23,108 @@
  * ╚══════╝╚══════╝╚═╝  ╚═╝  ╚═══╝  ╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
  */
 
-class Ai1wm_Debug_Security {
+class Ai1wm_Debug_Config {
 
 	/**
-	 * Get or generate the secret key
+	 * PHP die guard prepended to config file to prevent direct HTTP access
+	 */
+	const PHP_GUARD = "<?php exit; ?>\n";
+
+	/**
+	 * In-memory cache of config values
+	 *
+	 * @var array|null
+	 */
+	private static $data = null;
+
+	/**
+	 * Get config file path
 	 *
 	 * @return string
 	 */
-	public static function get_secret_key() {
-		$key = Ai1wm_Debug_Config::get( AI1WM_DEBUG_SECRET_KEY_OPTION );
-
-		if ( empty( $key ) ) {
-			$key = self::generate_random_hex( 32 );
-			Ai1wm_Debug_Config::set( AI1WM_DEBUG_SECRET_KEY_OPTION, $key );
-		}
-
-		return $key;
+	private static function file_path() {
+		return AI1WM_DEBUG_STORAGE_PATH . DIRECTORY_SEPARATOR . 'config.php';
 	}
 
 	/**
-	 * Verify a secret key
+	 * Load config from file into memory
 	 *
-	 * @param  string  $provided_key
-	 * @return boolean
+	 * @return array
 	 */
-	public static function verify_secret_key( $provided_key ) {
-		$stored_key = self::get_secret_key();
-
-		if ( function_exists( 'hash_equals' ) ) {
-			return hash_equals( $stored_key, $provided_key );
+	private static function load() {
+		if ( self::$data !== null ) {
+			return self::$data;
 		}
 
-		return $stored_key === $provided_key;
+		$file = self::file_path();
+		if ( file_exists( $file ) ) {
+			$content = @file_get_contents( $file );
+			if ( $content !== false ) {
+				$json = preg_replace( '/^<\?php\s+exit;\s*\?>\s*/', '', $content );
+				$decoded = json_decode( $json, true );
+				if ( is_array( $decoded ) ) {
+					self::$data = $decoded;
+					return self::$data;
+				}
+			}
+		}
+
+		self::$data = array();
+		return self::$data;
 	}
 
 	/**
-	 * Regenerate the secret key
-	 *
-	 * @return string
+	 * Save config to file
 	 */
-	public static function regenerate_secret_key() {
-		$key = self::generate_random_hex( 32 );
-		Ai1wm_Debug_Config::set( AI1WM_DEBUG_SECRET_KEY_OPTION, $key );
-		return $key;
+	private static function save() {
+		if ( self::$data === null ) {
+			return;
+		}
+
+		$dir = dirname( self::file_path() );
+		if ( ! is_dir( $dir ) ) {
+			@mkdir( $dir, 0755, true );
+		}
+
+		@file_put_contents(
+			self::file_path(),
+			self::PHP_GUARD . json_encode( self::$data, JSON_PRETTY_PRINT ),
+			LOCK_EX
+		);
 	}
 
 	/**
-	 * Generate a random hex string
+	 * Get a config value
 	 *
-	 * @param  int    $length Number of hex characters
-	 * @return string
+	 * @param  string $key
+	 * @param  mixed  $default
+	 * @return mixed
 	 */
-	public static function generate_random_hex( $length = 32 ) {
-		if ( function_exists( 'random_bytes' ) ) {
-			return bin2hex( random_bytes( $length / 2 ) );
-		}
+	public static function get( $key, $default = null ) {
+		$data = self::load();
+		return isset( $data[ $key ] ) ? $data[ $key ] : $default;
+	}
 
-		if ( function_exists( 'openssl_random_pseudo_bytes' ) ) {
-			return bin2hex( openssl_random_pseudo_bytes( $length / 2 ) );
-		}
+	/**
+	 * Set a config value
+	 *
+	 * @param string $key
+	 * @param mixed  $value
+	 */
+	public static function set( $key, $value ) {
+		self::load();
+		self::$data[ $key ] = $value;
+		self::save();
+	}
 
-		// Fallback for older PHP
-		$hex = '';
-		for ( $i = 0; $i < $length; $i++ ) {
-			$hex .= dechex( mt_rand( 0, 15 ) );
-		}
-		return $hex;
+	/**
+	 * Delete a config key
+	 *
+	 * @param string $key
+	 */
+	public static function delete( $key ) {
+		self::load();
+		unset( self::$data[ $key ] );
+		self::save();
 	}
 }

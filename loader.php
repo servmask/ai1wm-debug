@@ -35,6 +35,10 @@ require_once AI1WM_DEBUG_CONTROLLER_PATH .
 // Models
 require_once AI1WM_DEBUG_MODEL_PATH .
 	DIRECTORY_SEPARATOR .
+	'class-ai1wm-debug-config.php';
+
+require_once AI1WM_DEBUG_MODEL_PATH .
+	DIRECTORY_SEPARATOR .
 	'class-ai1wm-debug-security.php';
 
 require_once AI1WM_DEBUG_MODEL_PATH .
@@ -60,6 +64,10 @@ require_once AI1WM_DEBUG_MODEL_PATH .
 require_once AI1WM_DEBUG_MODEL_PATH .
 	DIRECTORY_SEPARATOR .
 	'class-ai1wm-debug-logger.php';
+
+require_once AI1WM_DEBUG_MODEL_PATH .
+	DIRECTORY_SEPARATOR .
+	'class-ai1wm-debug-filters.php';
 
 require_once AI1WM_DEBUG_MODEL_PATH .
 	DIRECTORY_SEPARATOR .

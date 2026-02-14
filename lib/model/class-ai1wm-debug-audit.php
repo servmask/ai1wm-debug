@@ -67,7 +67,7 @@ class Ai1wm_Debug_Audit {
 	 */
 	public static function get_current_token() {
 		$user_id = get_current_user_id();
-		$tokens  = get_option( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, array() );
+		$tokens  = Ai1wm_Debug_Config::get( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, array() );
 
 		foreach ( $tokens as $token => $data ) {
 			if ( ! empty( $data['active'] ) && $data['user_id'] == $user_id ) {
@@ -98,6 +98,11 @@ class Ai1wm_Debug_Audit {
 			$action,
 			$details
 		);
+
+		// Add PHP guard on first write
+		if ( ! file_exists( AI1WM_DEBUG_AUDIT_FILE ) ) {
+			@file_put_contents( AI1WM_DEBUG_AUDIT_FILE, "<?php exit; ?>\n", LOCK_EX );
+		}
 
 		@file_put_contents( AI1WM_DEBUG_AUDIT_FILE, $line, FILE_APPEND | LOCK_EX );
 	}
@@ -205,6 +210,11 @@ class Ai1wm_Debug_Audit {
 			return array( 'entries' => array(), 'total' => 0 );
 		}
 
+		// Strip PHP guard line
+		if ( ! empty( $lines[0] ) && strpos( $lines[0], '<?php' ) === 0 ) {
+			array_shift( $lines );
+		}
+
 		// Reverse so newest first
 		$lines = array_reverse( $lines );
 
@@ -243,6 +253,11 @@ class Ai1wm_Debug_Audit {
 		$tokens = array();
 
 		if ( $lines ) {
+			// Strip PHP guard line
+			if ( ! empty( $lines[0] ) && strpos( $lines[0], '<?php' ) === 0 ) {
+				array_shift( $lines );
+			}
+
 			foreach ( $lines as $line ) {
 				if ( preg_match( '/\[(\w{8})\.\.\.\]/', $line, $matches ) ) {
 					$tokens[$matches[1]] = true;

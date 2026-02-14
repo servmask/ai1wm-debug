@@ -71,7 +71,7 @@ class Ai1wm_Debug_Access {
 		}
 
 		// Store token data
-		$tokens = get_option( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, array() );
+		$tokens = Ai1wm_Debug_Config::get( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, array() );
 		$tokens[$token] = array(
 			'token'      => $token,
 			'user_id'    => $user_id,
@@ -82,7 +82,7 @@ class Ai1wm_Debug_Access {
 			'ip'         => isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '',
 			'active'     => true,
 		);
-		update_option( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, $tokens );
+		Ai1wm_Debug_Config::set( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, $tokens );
 
 		// Build the login URL
 		$url = add_query_arg( 'ai1wm_debug_token', $token, site_url( '/' ) );
@@ -103,7 +103,7 @@ class Ai1wm_Debug_Access {
 	 * @return int|false User ID or false
 	 */
 	public static function validate_token( $token ) {
-		$tokens = get_option( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, array() );
+		$tokens = Ai1wm_Debug_Config::get( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, array() );
 
 		if ( ! isset( $tokens[$token] ) ) {
 			return false;
@@ -130,7 +130,7 @@ class Ai1wm_Debug_Access {
 	 * @param string $token
 	 */
 	public static function revoke_access( $token ) {
-		$tokens = get_option( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, array() );
+		$tokens = Ai1wm_Debug_Config::get( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, array() );
 
 		if ( ! isset( $tokens[$token] ) ) {
 			return;
@@ -143,25 +143,24 @@ class Ai1wm_Debug_Access {
 			self::delete_support_user( $data['user_id'] );
 		}
 
-		// Mark as inactive
-		$tokens[$token]['active'] = false;
-		update_option( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, $tokens );
+		// Remove the token
+		unset( $tokens[$token] );
+		Ai1wm_Debug_Config::set( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, $tokens );
 	}
 
 	/**
 	 * Revoke all active tokens
 	 */
 	public static function revoke_all() {
-		$tokens = get_option( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, array() );
+		$tokens = Ai1wm_Debug_Config::get( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, array() );
 
 		foreach ( $tokens as $token => $data ) {
 			if ( ! empty( $data['active'] ) && ! empty( $data['user_id'] ) ) {
 				self::delete_support_user( $data['user_id'] );
-				$tokens[$token]['active'] = false;
 			}
 		}
 
-		update_option( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, $tokens );
+		Ai1wm_Debug_Config::set( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, array() );
 	}
 
 	/**
@@ -170,7 +169,7 @@ class Ai1wm_Debug_Access {
 	 * @return array
 	 */
 	public static function get_active_sessions() {
-		$tokens  = get_option( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, array() );
+		$tokens  = Ai1wm_Debug_Config::get( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, array() );
 		$active  = array();
 
 		foreach ( $tokens as $token => $data ) {
@@ -217,7 +216,7 @@ class Ai1wm_Debug_Access {
 		Ai1wm_Debug_Audit::log_action( $token, 'login', 'Support user logged in via token' );
 
 		// Determine redirect based on access level
-		$tokens = get_option( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, array() );
+		$tokens = Ai1wm_Debug_Config::get( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, array() );
 		$level  = isset( $tokens[$token]['level'] ) ? $tokens[$token]['level'] : 'debug_only';
 
 		if ( $level === 'debug_only' ) {

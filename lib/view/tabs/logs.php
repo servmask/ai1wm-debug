@@ -20,10 +20,11 @@
 			<?php endforeach; ?>
 		</select>
 		<button type="button" class="button" id="ai1wm-debug-log-load">Load</button>
-		<button type="button" class="button" id="ai1wm-debug-log-newer" style="display:none;">Newer</button>
-		<button type="button" class="button" id="ai1wm-debug-log-older" style="display:none;">Older</button>
 	</p>
 	<p id="ai1wm-debug-log-info" style="display:none;">
+		<button type="button" class="button" id="ai1wm-debug-log-older" style="display:none;">Older</button>
+		<button type="button" class="button" id="ai1wm-debug-log-newer" style="display:none;">Newer</button>
+		&nbsp;
 		Showing lines <span id="ai1wm-debug-log-offset">0</span>-<span id="ai1wm-debug-log-end">0</span>
 		of <span id="ai1wm-debug-log-total">0</span>
 	</p>

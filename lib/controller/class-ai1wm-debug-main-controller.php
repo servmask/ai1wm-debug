@@ -39,6 +39,9 @@ class Ai1wm_Debug_Main_Controller {
 		add_action( 'admin_init', array( $this, 'router' ) );
 		add_action( 'admin_init', array( $this, 'init_audit' ) );
 
+		// Exclude this plugin from AI1WM exports/imports
+		add_filter( 'ai1wm_exclude_plugins_from_export', array( $this, 'exclude_plugin' ) );
+
 		// Support access token login handler (runs on init, before admin)
 		Ai1wm_Debug_Access::init();
 
@@ -54,6 +57,7 @@ class Ai1wm_Debug_Main_Controller {
 	 */
 	public function init_logger() {
 		Ai1wm_Debug_Logger::init();
+		Ai1wm_Debug_Filters::init();
 	}
 
 	/**
@@ -64,21 +68,97 @@ class Ai1wm_Debug_Main_Controller {
 	}
 
 	/**
+	 * Exclude this plugin from AI1WM export
+	 *
+	 * @param  array $exclude
+	 * @return array
+	 */
+	public function exclude_plugin( $exclude ) {
+		$exclude[] = AI1WM_DEBUG_PLUGIN_NAME;
+		return $exclude;
+	}
+
+
+
+	/**
 	 * Create storage directory if needed
 	 */
 	public function setup_storage() {
-		if ( ! is_dir( AI1WM_DEBUG_STORAGE_PATH ) ) {
-			mkdir( AI1WM_DEBUG_STORAGE_PATH, 0755, true );
-		}
+		$dirs = array(
+			AI1WM_DEBUG_STORAGE_PATH,
+			AI1WM_DEBUG_LOGS_PATH,
+		);
 
-		$htaccess = AI1WM_DEBUG_STORAGE_PATH . DIRECTORY_SEPARATOR . '.htaccess';
+		foreach ( $dirs as $dir ) {
+			if ( ! is_dir( $dir ) ) {
+				mkdir( $dir, 0755, true );
+			}
+
+			self::protect_directory( $dir );
+		}
+	}
+
+	/**
+	 * Add protection files to a directory
+	 *
+	 * @param string $dir
+	 */
+	private static function protect_directory( $dir ) {
+		// .htaccess (Apache 2.2 + 2.4 compat)
+		$htaccess = $dir . DIRECTORY_SEPARATOR . '.htaccess';
 		if ( ! file_exists( $htaccess ) ) {
-			file_put_contents( $htaccess, 'deny from all' );
+			@file_put_contents( $htaccess, implode( "\n", array(
+				'<IfModule mod_authz_core.c>',
+				'	<FilesMatch ".*">',
+				'		Require all denied',
+				'	</FilesMatch>',
+				'</IfModule>',
+				'<IfModule !mod_authz_core.c>',
+				'	Order allow,deny',
+				'	Deny from all',
+				'</IfModule>',
+				'<IfModule mod_dir.c>',
+				'	DirectoryIndex index.php',
+				'</IfModule>',
+				'<IfModule mod_autoindex.c>',
+				'	Options -Indexes',
+				'</IfModule>',
+			) ) );
 		}
 
-		$index = AI1WM_DEBUG_STORAGE_PATH . DIRECTORY_SEPARATOR . 'index.php';
-		if ( ! file_exists( $index ) ) {
-			file_put_contents( $index, '<?php // Silence is golden' );
+		// web.config (IIS)
+		$webconfig = $dir . DIRECTORY_SEPARATOR . 'web.config';
+		if ( ! file_exists( $webconfig ) ) {
+			@file_put_contents( $webconfig, implode( "\n", array(
+				'<?xml version="1.0" encoding="utf-8"?>',
+				'<configuration>',
+				'	<system.webServer>',
+				'		<security>',
+				'			<authorization>',
+				'				<deny users="*" />',
+				'			</authorization>',
+				'		</security>',
+				'		<defaultDocument>',
+				'			<files>',
+				'				<add value="index.php" />',
+				'			</files>',
+				'		</defaultDocument>',
+				'		<directoryBrowse enabled="false" />',
+				'	</system.webServer>',
+				'</configuration>',
+			) ) );
+		}
+
+		// index.php
+		$index_php = $dir . DIRECTORY_SEPARATOR . 'index.php';
+		if ( ! file_exists( $index_php ) ) {
+			@file_put_contents( $index_php, '<?php // Kangaroos cannot jump here' );
+		}
+
+		// index.html
+		$index_html = $dir . DIRECTORY_SEPARATOR . 'index.html';
+		if ( ! file_exists( $index_html ) ) {
+			@file_put_contents( $index_html, 'Kangaroos cannot jump here' );
 		}
 	}
 
@@ -209,6 +289,11 @@ class Ai1wm_Debug_Main_Controller {
 		add_action( 'wp_ajax_ai1wm_debug_download_report', 'Ai1wm_Debug_Ajax_Controller::download_report' );
 		add_action( 'wp_ajax_ai1wm_debug_poll_realtime_log', 'Ai1wm_Debug_Ajax_Controller::poll_realtime_log' );
 		add_action( 'wp_ajax_ai1wm_debug_toggle_logger', 'Ai1wm_Debug_Ajax_Controller::toggle_logger' );
+		add_action( 'wp_ajax_ai1wm_debug_clear_realtime_log', 'Ai1wm_Debug_Ajax_Controller::clear_realtime_log' );
+		add_action( 'wp_ajax_ai1wm_debug_download_realtime_log', 'Ai1wm_Debug_Ajax_Controller::download_realtime_log' );
+		add_action( 'wp_ajax_ai1wm_debug_get_run_logs', 'Ai1wm_Debug_Ajax_Controller::get_run_logs' );
+		add_action( 'wp_ajax_ai1wm_debug_delete_run_log', 'Ai1wm_Debug_Ajax_Controller::delete_run_log' );
+		add_action( 'wp_ajax_ai1wm_debug_save_filter_overrides', 'Ai1wm_Debug_Ajax_Controller::save_filter_overrides' );
 		add_action( 'wp_ajax_ai1wm_debug_generate_access', 'Ai1wm_Debug_Ajax_Controller::generate_access' );
 		add_action( 'wp_ajax_ai1wm_debug_revoke_access', 'Ai1wm_Debug_Ajax_Controller::revoke_access' );
 		add_action( 'wp_ajax_ai1wm_debug_revoke_all_access', 'Ai1wm_Debug_Ajax_Controller::revoke_all_access' );

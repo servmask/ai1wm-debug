@@ -190,6 +190,7 @@ class Ai1wm_Debug_Plugins {
 		$conflicts  = array();
 		$all_active = get_option( 'active_plugins', array() );
 
+		// TODO: Confirm plugin list and descriptions with support team
 		$known = array(
 			'w3-total-cache/w3-total-cache.php'       => 'W3 Total Cache may interfere with large imports due to object caching.',
 			'wp-super-cache/wp-cache.php'              => 'WP Super Cache may serve stale pages after import.',

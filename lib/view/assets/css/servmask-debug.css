@@ -61,6 +61,19 @@
 	border-radius: 4px;
 }
 
+/* Danger button */
+.ai1wm-debug-button-danger {
+	color: #a00 !important;
+	border-color: #a00 !important;
+}
+
+.ai1wm-debug-button-danger:hover,
+.ai1wm-debug-button-danger:focus {
+	color: #fff !important;
+	background: #a00 !important;
+	border-color: #a00 !important;
+}
+
 /* Realtime controls */
 #ai1wm-debug-realtime-controls {
 	margin-bottom: 10px;

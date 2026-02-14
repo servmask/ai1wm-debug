@@ -79,13 +79,14 @@ class Ai1wm_Debug_Logs {
 			}
 		}
 
-		// Plugin's own debug log
-		if ( file_exists( AI1WM_DEBUG_LOG_FILE ) ) {
+		// Plugin's run logs
+		$run_logs = Ai1wm_Debug_Logger::get_run_logs();
+		foreach ( $run_logs as $run_log ) {
 			$files[] = array(
-				'key'   => 'plugin_debug',
-				'label' => 'ServMask Debug Log',
-				'path'  => AI1WM_DEBUG_LOG_FILE,
-				'size'  => ai1wm_debug_size_format( filesize( AI1WM_DEBUG_LOG_FILE ), 2 ),
+				'key'   => 'run_' . $run_log['filename'],
+				'label' => ucfirst( $run_log['type'] ) . ' ' . $run_log['date'],
+				'path'  => $run_log['path'],
+				'size'  => ai1wm_debug_size_format( $run_log['size'], 2 ),
 			);
 		}
 
