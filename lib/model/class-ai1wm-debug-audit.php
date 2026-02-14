@@ -120,6 +120,11 @@ class Ai1wm_Debug_Audit {
 	// Hook callbacks
 
 	public static function log_page_visit() {
+		// Skip AJAX requests
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			return;
+		}
+
 		$token = self::get_current_token();
 		if ( $token ) {
 			$page = isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : '';
@@ -257,6 +262,18 @@ class Ai1wm_Debug_Audit {
 	}
 
 	/**
+	 * Delete an audit log file by token prefix
+	 *
+	 * @param string $token
+	 */
+	public static function delete_audit_log( $token ) {
+		$file = self::get_audit_file( $token );
+		if ( file_exists( $file ) ) {
+			@unlink( $file );
+		}
+	}
+
+	/**
 	 * Get all audit files in storage
 	 *
 	 * @return array File paths
@@ -278,23 +295,54 @@ class Ai1wm_Debug_Audit {
 	}
 
 	/**
-	 * Get token prefixes from audit file names
+	 * Get session info from audit file names and contents
 	 *
 	 * @return array
 	 */
 	public static function get_session_tokens() {
-		$tokens = array();
-		$dir    = @opendir( AI1WM_DEBUG_LOGS_PATH );
+		$sessions = array();
+		$dir      = @opendir( AI1WM_DEBUG_LOGS_PATH );
 
 		if ( $dir ) {
 			while ( ( $entry = readdir( $dir ) ) !== false ) {
 				if ( preg_match( '/^audit-([a-f0-9]{8})\.php$/', $entry, $matches ) ) {
-					$tokens[] = $matches[1];
+					$prefix = $matches[1];
+					$file   = AI1WM_DEBUG_LOGS_PATH . DIRECTORY_SEPARATOR . $entry;
+					$lines  = self::read_audit_file( $file );
+
+					$label    = $prefix;
+					$username = '';
+					$level    = '';
+					$date     = '';
+
+					// Parse first entry for metadata
+					if ( ! empty( $lines[0] ) ) {
+						if ( preg_match( '/^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2})/', $lines[0], $m ) ) {
+							$date = $m[1];
+						}
+						if ( preg_match( '/user: (\S+)/', $lines[0], $m ) ) {
+							$username = $m[1];
+						}
+						if ( preg_match( '/Access level: (\w+)/', $lines[0], $m ) ) {
+							$level = $m[1] === 'full' ? 'Full Admin' : 'Debug Only';
+						}
+					}
+
+					if ( $username && $level && $date ) {
+						$label = $username . ' (' . $level . ') - ' . $date;
+					} elseif ( $date ) {
+						$label = $prefix . ' - ' . $date;
+					}
+
+					$sessions[] = array(
+						'prefix' => $prefix,
+						'label'  => $label,
+					);
 				}
 			}
 			closedir( $dir );
 		}
 
-		return $tokens;
+		return $sessions;
 	}
 }

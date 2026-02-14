@@ -13,13 +13,14 @@
 		<label for="ai1wm-debug-audit-filter"><strong>Filter by session:</strong></label>
 		<select id="ai1wm-debug-audit-filter">
 			<option value="">All sessions</option>
-			<?php foreach ( $session_tokens as $token_prefix ) : ?>
-				<option value="<?php echo esc_attr( $token_prefix ); ?>">
-					Session <?php echo esc_html( $token_prefix ); ?>...
+			<?php foreach ( $session_tokens as $session ) : ?>
+				<option value="<?php echo esc_attr( $session['prefix'] ); ?>">
+					<?php echo esc_html( $session['label'] ); ?>
 				</option>
 			<?php endforeach; ?>
 		</select>
 		<button type="button" class="button" id="ai1wm-debug-audit-load">Load Entries</button>
+		<button type="button" class="button ai1wm-debug-button-danger" id="ai1wm-debug-audit-delete" style="display:none;">Delete</button>
 	</p>
 
 	<div id="ai1wm-debug-audit-content">

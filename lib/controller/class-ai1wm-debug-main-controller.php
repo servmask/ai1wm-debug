@@ -290,5 +290,6 @@ class Ai1wm_Debug_Main_Controller {
 		add_action( 'wp_ajax_ai1wm_debug_revoke_access', 'Ai1wm_Debug_Ajax_Controller::revoke_access' );
 		add_action( 'wp_ajax_ai1wm_debug_revoke_all_access', 'Ai1wm_Debug_Ajax_Controller::revoke_all_access' );
 		add_action( 'wp_ajax_ai1wm_debug_get_audit_entries', 'Ai1wm_Debug_Ajax_Controller::get_audit_entries' );
+		add_action( 'wp_ajax_ai1wm_debug_delete_audit_log', 'Ai1wm_Debug_Ajax_Controller::delete_audit_log' );
 	}
 }

@@ -102,6 +102,10 @@
 						<td><?php echo esc_html( $session['created_by_name'] ); ?></td>
 						<td><?php echo esc_html( $session['ip'] ); ?></td>
 						<td>
+							<button type="button" class="button ai1wm-debug-copy-token-url"
+								data-url="<?php echo esc_attr( add_query_arg( 'ai1wm_debug_token', $session['token'], site_url( '/' ) ) ); ?>">
+								Copy Link
+							</button>
 							<button type="button" class="button ai1wm-debug-revoke-access"
 								data-token="<?php echo esc_attr( $session['token'] ); ?>">
 								Revoke

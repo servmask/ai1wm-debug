@@ -360,4 +360,27 @@ class Ai1wm_Debug_Ajax_Controller {
 		echo json_encode( Ai1wm_Debug_Audit::get_entries( $token, $offset, $limit ) );
 		exit;
 	}
+
+	/**
+	 * Delete an audit log (AJAX)
+	 */
+	public static function delete_audit_log() {
+		self::verify_request();
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			echo json_encode( array( 'error' => 'Unauthorized' ) );
+			exit;
+		}
+
+		$token = isset( $_POST['token'] ) ? sanitize_text_field( $_POST['token'] ) : '';
+		if ( empty( $token ) ) {
+			echo json_encode( array( 'error' => 'No session selected' ) );
+			exit;
+		}
+
+		Ai1wm_Debug_Audit::delete_audit_log( $token );
+
+		echo json_encode( array( 'success' => true ) );
+		exit;
+	}
 }
