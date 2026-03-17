@@ -248,7 +248,7 @@ class Ai1wm_Debug_Filters {
 				}
 
 				// Only allow ai1wm_ prefixed filters for safety
-				if ( strpos( $custom['filter'], 'ai1wm' ) !== 0 ) {
+				if ( strpos( $custom['filter'], 'ai1wm_' ) !== 0 ) {
 					continue;
 				}
 
@@ -419,6 +419,11 @@ class Ai1wm_Debug_Filters {
 	 * @return mixed
 	 */
 	private static function eval_php( $code, $value ) {
+		// Require explicit opt-in via wp-config.php constant
+		if ( ! defined( 'AI1WM_DEBUG_ALLOW_EVAL' ) || ! AI1WM_DEBUG_ALLOW_EVAL ) {
+			return $value;
+		}
+
 		$params = isset( $GLOBALS['ai1wm_params'] ) ? $GLOBALS['ai1wm_params'] : array();
 
 		try {

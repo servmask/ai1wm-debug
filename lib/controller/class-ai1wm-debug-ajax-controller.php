@@ -32,13 +32,11 @@ class Ai1wm_Debug_Ajax_Controller {
 	 */
 	private static function verify_request() {
 		if ( ! ai1wm_debug_current_user_can() ) {
-			echo json_encode( array( 'error' => 'Unauthorized' ) );
-			exit;
+			wp_send_json( array( 'error' => 'Unauthorized' ) );
 		}
 
 		if ( ! check_ajax_referer( AI1WM_DEBUG_NONCE, 'nonce', false ) ) {
-			echo json_encode( array( 'error' => 'Invalid nonce' ) );
-			exit;
+			wp_send_json( array( 'error' => 'Invalid nonce' ) );
 		}
 
 		return true;
@@ -49,8 +47,7 @@ class Ai1wm_Debug_Ajax_Controller {
 	 */
 	public static function get_database_tables() {
 		self::verify_request();
-		echo json_encode( Ai1wm_Debug_Database::get_tables() );
-		exit;
+		wp_send_json( Ai1wm_Debug_Database::get_tables() );
 	}
 
 	/**
@@ -58,8 +55,7 @@ class Ai1wm_Debug_Ajax_Controller {
 	 */
 	public static function get_log_files() {
 		self::verify_request();
-		echo json_encode( Ai1wm_Debug_Logs::get_log_files() );
-		exit;
+		wp_send_json( Ai1wm_Debug_Logs::get_log_files() );
 	}
 
 	/**
@@ -72,8 +68,7 @@ class Ai1wm_Debug_Ajax_Controller {
 		$offset = isset( $_POST['offset'] ) ? intval( $_POST['offset'] ) : 0;
 		$lines  = isset( $_POST['lines'] ) ? intval( $_POST['lines'] ) : 100;
 
-		echo json_encode( Ai1wm_Debug_Logs::read_log( $file, $offset, $lines ) );
-		exit;
+		wp_send_json( Ai1wm_Debug_Logs::read_log( $file, $offset, $lines ) );
 	}
 
 	/**
@@ -115,8 +110,7 @@ class Ai1wm_Debug_Ajax_Controller {
 		$current = Ai1wm_Debug_Logger::get_current_log_file();
 		$result['current_file'] = $current ? basename( $current ) : '';
 
-		echo json_encode( $result );
-		exit;
+		wp_send_json( $result );
 	}
 
 	/**
@@ -125,8 +119,7 @@ class Ai1wm_Debug_Ajax_Controller {
 	public static function get_run_logs() {
 		self::verify_request();
 
-		echo json_encode( Ai1wm_Debug_Logger::get_run_logs() );
-		exit;
+		wp_send_json( Ai1wm_Debug_Logger::get_run_logs() );
 	}
 
 	/**
@@ -177,8 +170,7 @@ class Ai1wm_Debug_Ajax_Controller {
 
 		Ai1wm_Debug_Logger::delete_run_log( $filename );
 
-		echo json_encode( array( 'success' => true ) );
-		exit;
+		wp_send_json( array( 'success' => true ) );
 	}
 
 	/**
@@ -192,8 +184,7 @@ class Ai1wm_Debug_Ajax_Controller {
 			Ai1wm_Debug_Logger::delete_run_log( $log['filename'] );
 		}
 
-		echo json_encode( array( 'success' => true ) );
-		exit;
+		wp_send_json( array( 'success' => true ) );
 	}
 
 	/**
@@ -203,8 +194,7 @@ class Ai1wm_Debug_Ajax_Controller {
 		self::verify_request();
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			echo json_encode( array( 'error' => 'Unauthorized' ) );
-			exit;
+			wp_send_json( array( 'error' => 'Unauthorized' ) );
 		}
 
 		$presets    = isset( $_POST['presets'] ) ? $_POST['presets'] : array();
@@ -240,7 +230,7 @@ class Ai1wm_Debug_Ajax_Controller {
 				}
 				// Only allow ai1wm_ prefixed filters
 				$filter_name = sanitize_text_field( $item['filter'] );
-				if ( strpos( $filter_name, 'ai1wm' ) !== 0 ) {
+				if ( strpos( $filter_name, 'ai1wm_' ) !== 0 ) {
 					continue;
 				}
 				// PHP type needs raw code (not sanitize_text_field which strips tags)
@@ -263,8 +253,7 @@ class Ai1wm_Debug_Ajax_Controller {
 			'custom'     => $saved_custom,
 		) );
 
-		echo json_encode( array( 'success' => true ) );
-		exit;
+		wp_send_json( array( 'success' => true ) );
 	}
 
 	/**
@@ -274,8 +263,7 @@ class Ai1wm_Debug_Ajax_Controller {
 		self::verify_request();
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			echo json_encode( array( 'error' => 'Unauthorized' ) );
-			exit;
+			wp_send_json( array( 'error' => 'Unauthorized' ) );
 		}
 
 		$enabled  = isset( $_POST['enabled'] ) ? intval( $_POST['enabled'] ) : 0;
@@ -292,8 +280,7 @@ class Ai1wm_Debug_Ajax_Controller {
 		Ai1wm_Debug_Config::set( AI1WM_DEBUG_LOGGER_ENABLED_OPTION, $enabled );
 		Ai1wm_Debug_Config::set( AI1WM_DEBUG_LOGGER_CHANNELS_OPTION, $saved_channels );
 
-		echo json_encode( array( 'success' => true ) );
-		exit;
+		wp_send_json( array( 'success' => true ) );
 	}
 
 	/**
@@ -303,16 +290,14 @@ class Ai1wm_Debug_Ajax_Controller {
 		self::verify_request();
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			echo json_encode( array( 'error' => 'Unauthorized' ) );
-			exit;
+			wp_send_json( array( 'error' => 'Unauthorized' ) );
 		}
 
 		$level = isset( $_POST['level'] ) ? sanitize_key( $_POST['level'] ) : 'debug_only';
 
 		$result = Ai1wm_Debug_Access::create_access( $level );
 
-		echo json_encode( $result );
-		exit;
+		wp_send_json( $result );
 	}
 
 	/**
@@ -322,16 +307,14 @@ class Ai1wm_Debug_Ajax_Controller {
 		self::verify_request();
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			echo json_encode( array( 'error' => 'Unauthorized' ) );
-			exit;
+			wp_send_json( array( 'error' => 'Unauthorized' ) );
 		}
 
-		$token = isset( $_POST['token'] ) ? sanitize_text_field( $_POST['token'] ) : '';
+		$token_hash = isset( $_POST['token'] ) ? sanitize_text_field( $_POST['token'] ) : '';
 
-		Ai1wm_Debug_Access::revoke_access( $token );
+		Ai1wm_Debug_Access::revoke_access_by_hash( $token_hash );
 
-		echo json_encode( array( 'success' => true ) );
-		exit;
+		wp_send_json( array( 'success' => true ) );
 	}
 
 	/**
@@ -341,14 +324,12 @@ class Ai1wm_Debug_Ajax_Controller {
 		self::verify_request();
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			echo json_encode( array( 'error' => 'Unauthorized' ) );
-			exit;
+			wp_send_json( array( 'error' => 'Unauthorized' ) );
 		}
 
 		Ai1wm_Debug_Access::revoke_all();
 
-		echo json_encode( array( 'success' => true ) );
-		exit;
+		wp_send_json( array( 'success' => true ) );
 	}
 
 	/**
@@ -357,12 +338,15 @@ class Ai1wm_Debug_Ajax_Controller {
 	public static function get_audit_entries() {
 		self::verify_request();
 
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json( array( 'error' => 'Unauthorized' ) );
+		}
+
 		$token  = isset( $_POST['token'] ) ? sanitize_text_field( $_POST['token'] ) : '';
 		$offset = isset( $_POST['offset'] ) ? intval( $_POST['offset'] ) : 0;
 		$limit  = isset( $_POST['limit'] ) ? intval( $_POST['limit'] ) : 100;
 
-		echo json_encode( Ai1wm_Debug_Audit::get_entries( $token, $offset, $limit ) );
-		exit;
+		wp_send_json( Ai1wm_Debug_Audit::get_entries( $token, $offset, $limit ) );
 	}
 
 	/**
@@ -372,19 +356,16 @@ class Ai1wm_Debug_Ajax_Controller {
 		self::verify_request();
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			echo json_encode( array( 'error' => 'Unauthorized' ) );
-			exit;
+			wp_send_json( array( 'error' => 'Unauthorized' ) );
 		}
 
 		$token = isset( $_POST['token'] ) ? sanitize_text_field( $_POST['token'] ) : '';
 		if ( empty( $token ) ) {
-			echo json_encode( array( 'error' => 'No session selected' ) );
-			exit;
+			wp_send_json( array( 'error' => 'No session selected' ) );
 		}
 
 		Ai1wm_Debug_Audit::delete_audit_log( $token );
 
-		echo json_encode( array( 'success' => true ) );
-		exit;
+		wp_send_json( array( 'success' => true ) );
 	}
 }

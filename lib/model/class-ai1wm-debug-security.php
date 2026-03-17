@@ -54,7 +54,17 @@ class Ai1wm_Debug_Security {
 			return hash_equals( $stored_key, $provided_key );
 		}
 
-		return $stored_key === $provided_key;
+		// Constant-time comparison fallback for PHP < 5.6
+		if ( strlen( $stored_key ) !== strlen( $provided_key ) ) {
+			return false;
+		}
+
+		$result = 0;
+		for ( $i = 0, $len = strlen( $stored_key ); $i < $len; $i++ ) {
+			$result |= ord( $stored_key[$i] ) ^ ord( $provided_key[$i] );
+		}
+
+		return $result === 0;
 	}
 
 	/**
@@ -83,10 +93,10 @@ class Ai1wm_Debug_Security {
 			return bin2hex( openssl_random_pseudo_bytes( $length / 2 ) );
 		}
 
-		// Fallback for older PHP
+		// Fallback for older PHP — wp_rand is seeded with site secrets
 		$hex = '';
 		for ( $i = 0; $i < $length; $i++ ) {
-			$hex .= dechex( mt_rand( 0, 15 ) );
+			$hex .= dechex( wp_rand( 0, 15 ) );
 		}
 		return $hex;
 	}

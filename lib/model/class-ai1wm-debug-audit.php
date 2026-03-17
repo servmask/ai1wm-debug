@@ -69,9 +69,9 @@ class Ai1wm_Debug_Audit {
 		$user_id = get_current_user_id();
 		$tokens  = Ai1wm_Debug_Config::get( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, array() );
 
-		foreach ( $tokens as $token => $data ) {
-			if ( ! empty( $data['active'] ) && $data['user_id'] == $user_id ) {
-				return $token;
+		foreach ( $tokens as $token_hash => $data ) {
+			if ( ! empty( $data['active'] ) && intval( $data['user_id'] ) === $user_id ) {
+				return isset( $data['token_prefix'] ) ? $data['token_prefix'] : substr( $token_hash, 0, 8 );
 			}
 		}
 
@@ -127,7 +127,7 @@ class Ai1wm_Debug_Audit {
 
 		$token = self::get_current_token();
 		if ( $token ) {
-			$page = isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : '';
+			$page = isset( $_SERVER['REQUEST_URI'] ) ? preg_replace( '/[\x00-\x1f\x7f]/', '', $_SERVER['REQUEST_URI'] ) : '';
 			self::log_action( $token, 'page_visit', $page );
 		}
 	}

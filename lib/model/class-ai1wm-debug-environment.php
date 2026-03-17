@@ -254,12 +254,12 @@ class Ai1wm_Debug_Environment {
 			),
 			array(
 				'label'  => 'Server Software',
-				'value'  => isset( $_SERVER['SERVER_SOFTWARE'] ) ? $_SERVER['SERVER_SOFTWARE'] : 'Unknown',
+				'value'  => isset( $_SERVER['SERVER_SOFTWARE'] ) ? sanitize_text_field( $_SERVER['SERVER_SOFTWARE'] ) : 'Unknown',
 				'status' => true,
 			),
 			array(
 				'label'  => 'Server Name',
-				'value'  => isset( $_SERVER['SERVER_NAME'] ) ? $_SERVER['SERVER_NAME'] : 'Unknown',
+				'value'  => isset( $_SERVER['SERVER_NAME'] ) ? sanitize_text_field( $_SERVER['SERVER_NAME'] ) : 'Unknown',
 				'status' => true,
 			),
 		);

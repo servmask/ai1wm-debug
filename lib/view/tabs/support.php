@@ -87,6 +87,7 @@
 					<th>Username</th>
 					<th>Access Level</th>
 					<th>Created</th>
+					<th>Expires In</th>
 					<th>Created By</th>
 					<th>IP</th>
 					<th>Actions</th>
@@ -99,15 +100,12 @@
 						<td><?php echo esc_html( $session['username'] ); ?></td>
 						<td><?php echo esc_html( $session['level'] === 'full' ? 'Full Admin' : 'Debug Only' ); ?></td>
 						<td><?php echo esc_html( $session['created_at'] ); ?></td>
+						<td><?php echo isset( $session['expires_in'] ) ? esc_html( $session['expires_in'] ) : 'N/A'; ?></td>
 						<td><?php echo esc_html( $session['created_by_name'] ); ?></td>
 						<td><?php echo esc_html( $session['ip'] ); ?></td>
 						<td>
-							<button type="button" class="button ai1wm-debug-copy-token-url"
-								data-url="<?php echo esc_attr( add_query_arg( 'ai1wm_debug_token', $session['token'], site_url( '/' ) ) ); ?>">
-								Copy Link
-							</button>
 							<button type="button" class="button ai1wm-debug-revoke-access"
-								data-token="<?php echo esc_attr( $session['token'] ); ?>">
+								data-token="<?php echo esc_attr( $session['token_hash'] ); ?>">
 								Revoke
 							</button>
 						</td>

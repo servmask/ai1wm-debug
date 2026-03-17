@@ -42,7 +42,7 @@ function ai1wm_debug_is_ai1wm_active() {
 function ai1wm_debug_render( $view, $args = array() ) {
 	$file = AI1WM_DEBUG_VIEW_PATH . DIRECTORY_SEPARATOR . $view . '.php';
 	if ( file_exists( $file ) ) {
-		extract( $args );
+		extract( $args, EXTR_SKIP );
 		include $file;
 	}
 }
@@ -271,7 +271,12 @@ function ai1wm_debug_get_base_plugin_latest_version() {
 	$plugin_info = wp_remote_get( 'https://api.wordpress.org/plugins/info/1.0/all-in-one-wp-migration' );
 
 	if ( is_array( $plugin_info ) && ! is_wp_error( $plugin_info ) ) {
-		$body = @unserialize( wp_remote_retrieve_body( $plugin_info ) );
+		$raw = wp_remote_retrieve_body( $plugin_info );
+		if ( version_compare( PHP_VERSION, '7.0.0', '>=' ) ) {
+			$body = @unserialize( $raw, array( 'allowed_classes' => array( 'stdClass' ) ) );
+		} else {
+			$body = @unserialize( $raw );
+		}
 		if ( $body && isset( $body->version ) ) {
 			return $body->version;
 		}
