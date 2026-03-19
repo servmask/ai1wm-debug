@@ -37,7 +37,7 @@ ServMask Debug is a standalone WordPress plugin that provides comprehensive diag
 - **Debug Only**: Subscriber role with access to the debug plugin page and AI1WM (export/import/backups)
 - **Full Administrator**: Full admin access to the entire WordPress site
 
-Active access tokens table with Copy Link and Revoke controls. Confirmation checkbox required before generating. All support sessions are audit-logged.
+Active access tokens table with expiration countdown and Revoke controls. Tokens expire after 72 hours by default (configurable). Tokens are stored as SHA-256 hashes. Rate-limited login endpoint. Confirmation checkbox required before generating. All support sessions are audit-logged.
 
 **Audit Log** - Chronological log of all actions taken during support sessions. Per-token log files. Tracks page visits, plugin activations, theme changes, post modifications, user changes, option updates, login/logout. Session selector with friendly labels (username, access level, date). Delete individual audit logs.
 
@@ -46,6 +46,8 @@ Active access tokens table with Copy Link and Revoke controls. Confirmation chec
 ### AI1WM-Dependent Tabs (appear when AI1WM is active)
 
 **Real-time Log** - Live streaming log of AI1WM export/import operations. Six logging channels: Pipeline Stages, Params Snapshot, Status Messages, File Exclusions, HTTP Loopback, Errors. Per-run log files with selector, download, and delete. Auto-scroll toggle. Enable/disable logger and select channels.
+
+**Schedules** - Full view of scheduled backup tasks across the AI1WM ecosystem. Pro schedule events with status, type, storage, interval, next/last run, retention policy, notifications, and expandable recent logs. Legacy extension schedules (per-storage cron hooks) with overdue detection. Raw AI1WM cron entry listing. Diagnostics: WP-Cron disabled, stuck events, missing cron entries, failed runs, overdue schedules.
 
 **Operations** - Current operation status (active/type/message). Detected issues with severity (stale status, low memory, low disk, short execution time, orphaned temp dirs). AI1WM scheduled cron jobs. Backup file listing. Storage directory contents.
 
@@ -89,6 +91,7 @@ servmask-debug/
       class-ai1wm-debug-logs.php              # Log file discovery
       class-ai1wm-debug-markdown.php          # Markdown to HTML converter
       class-ai1wm-debug-operations.php        # AI1WM operations status
+      class-ai1wm-debug-schedules.php         # Scheduled task diagnostics
       class-ai1wm-debug-plugins.php           # Plugin/theme analysis
       class-ai1wm-debug-report.php            # Report generation
       class-ai1wm-debug-security.php          # Capabilities and keys

@@ -250,6 +250,7 @@ class Ai1wm_Debug_Main_Controller {
 		// AI1WM-dependent tabs
 		if ( $ai1wm_active ) {
 			$tabs['realtime']   = 'Real-time Log';
+			$tabs['schedules']  = 'Schedules';
 			$tabs['operations'] = 'Operations';
 		}
 

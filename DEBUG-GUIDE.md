@@ -131,6 +131,29 @@ If a security plugin is suspected, ask the customer to temporarily deactivate it
 3. If permissions are wrong, ask the customer or their hosting provider to set `0755` for directories
 4. If `wp-content/ai1wm-backups` doesn't exist or isn't writable, AI1WM cannot store backups
 
+### Scheduled Backups Not Running
+
+**Diagnose (any access level):**
+1. Go to the **Schedules** tab - check the Issues section at the top for immediate problems
+2. Look for "WP-Cron is disabled" - if present, the customer needs a system cron job calling `wp-cron.php`
+3. Check if the schedule event shows "Enabled" but "Not scheduled" for next run - the cron entry is missing
+4. Check if the last run shows "Failed" - expand the log entries for the error message
+
+**Common causes:**
+- **DISABLE_WP_CRON is true** without a system cron replacement - most common cause
+- **Event stuck in Running** - a previous run crashed without completing; the event won't reschedule until cleared
+- **Last run Failed** - check the error in the expandable log. Common errors: insufficient disk space, storage API authentication expired, network timeout
+- **Overdue legacy schedules** - WP-Cron fires on page visits; low-traffic sites may have long delays between cron runs
+
+**For Pro schedule events:**
+- Check the retention policy - if set too aggressively (e.g., keep 1 backup + max 100 MB), old backups may be deleted before new ones finish
+- Verify the storage destination is still configured and authenticated
+- Check if notifications are configured - the customer may have error emails they haven't checked
+
+**For legacy extension schedules:**
+- Legacy hooks only fire when WP-Cron runs - they cannot be manually triggered from this plugin
+- If an extension was recently deactivated and reactivated, the cron entry may need to be re-registered from the extension's settings page
+
 ### SSL / Certificate Issues
 
 **Diagnose (any access level):**

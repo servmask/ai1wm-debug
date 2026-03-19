@@ -75,6 +75,10 @@ require_once AI1WM_DEBUG_MODEL_PATH .
 
 require_once AI1WM_DEBUG_MODEL_PATH .
 	DIRECTORY_SEPARATOR .
+	'class-ai1wm-debug-schedules.php';
+
+require_once AI1WM_DEBUG_MODEL_PATH .
+	DIRECTORY_SEPARATOR .
 	'class-ai1wm-debug-report.php';
 
 require_once AI1WM_DEBUG_MODEL_PATH .

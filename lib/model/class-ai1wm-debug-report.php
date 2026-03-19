@@ -42,6 +42,7 @@ class Ai1wm_Debug_Report {
 
 		if ( ai1wm_debug_is_ai1wm_active() ) {
 			$report['operations'] = Ai1wm_Debug_Operations::get_data();
+			$report['schedules']  = Ai1wm_Debug_Schedules::get_data();
 		}
 
 		return $report;
@@ -195,6 +196,15 @@ class Ai1wm_Debug_Report {
 			}
 			$output .= self::table( $ops_rows );
 
+			if ( ! empty( $ops['crons'] ) ) {
+				$output .= self::section_title( 'Cron Jobs' );
+				$cron_rows = array();
+				foreach ( $ops['crons'] as $cron ) {
+					$cron_rows[] = array( $cron['hook'], $cron['next_run'] . '  [' . $cron['schedule'] . ']' );
+				}
+				$output .= self::table( $cron_rows );
+			}
+
 			if ( ! empty( $ops['backups'] ) ) {
 				$output .= self::section_title( 'Backups' );
 				$bk_rows = array();
@@ -202,6 +212,46 @@ class Ai1wm_Debug_Report {
 					$bk_rows[] = array( $backup['name'], $backup['size'] );
 				}
 				$output .= self::table( $bk_rows );
+			}
+		}
+
+		// Schedules (AI1WM-dependent)
+		if ( ! empty( $report['schedules'] ) ) {
+			$sched = $report['schedules'];
+
+			if ( ! empty( $sched['issues'] ) ) {
+				$output .= self::section_title( 'Schedule Issues' );
+				$si_rows = array();
+				foreach ( $sched['issues'] as $issue ) {
+					$si_rows[] = array( '[' . strtoupper( $issue['severity'] ) . ']', $issue['message'] );
+				}
+				$output .= self::table( $si_rows );
+			}
+
+			if ( ! empty( $sched['pro_events'] ) ) {
+				$output .= self::section_title( 'Schedule Events (Pro)' );
+				$se_rows = array();
+				foreach ( $sched['pro_events'] as $event ) {
+					$se_rows[] = array( $event['title'], $event['status'] . '  ' . $event['type'] . ' -> ' . $event['storage'] );
+					$se_rows[] = array( '', $event['schedule'] . '  Last: ' . $event['last_run'] );
+					if ( $event['next_run'] ) {
+						$se_rows[] = array( '', 'Next: ' . $event['next_run'] );
+					}
+					if ( $event['retention'] !== 'None' && $event['retention'] !== 'Unlimited' ) {
+						$se_rows[] = array( '', 'Retention: ' . $event['retention'] );
+					}
+				}
+				$output .= self::table( $se_rows );
+			}
+
+			if ( ! empty( $sched['legacy_schedules'] ) ) {
+				$output .= self::section_title( 'Legacy Extension Schedules' );
+				$ls_rows = array();
+				foreach ( $sched['legacy_schedules'] as $ls ) {
+					$status = $ls['is_overdue'] ? 'OVERDUE' : 'OK';
+					$ls_rows[] = array( $ls['storage'] . ' (' . $ls['interval'] . ')', $ls['next_run'] . '  [' . $status . ']' );
+				}
+				$output .= self::table( $ls_rows );
 			}
 		}
 

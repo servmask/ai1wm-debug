@@ -8,7 +8,7 @@ After activating the plugin, click **ServMask Debug** in the WordPress admin sid
 
 The plugin works in two modes:
 - **Standalone mode**: Shows Environment, Filesystem, Database, Plugins, Logs, Support, Audit Log, and Help tabs
-- **Enhanced mode**: When All-in-One WP Migration is active, two additional tabs appear: Real-time Log and Operations
+- **Enhanced mode**: When All-in-One WP Migration is active, three additional tabs appear: Real-time Log, Schedules, and Operations
 
 ---
 
@@ -115,7 +115,24 @@ Add file or directory patterns (one per line) to exclude from exports. These are
 **Custom overrides:**
 Add overrides for any `ai1wm_*` filter. Choose the value type (int, string, bool, or php for custom code) and optionally target specific stages.
 
+> **Note:** The **php** type requires `define('AI1WM_DEBUG_ALLOW_EVAL', true);` in your `wp-config.php` file. Without this constant, PHP-type overrides are silently ignored. This is a security measure to prevent stored code execution through the web UI alone.
+
 Click **Save Overrides** to apply. Changes take effect on the next operation.
+
+### Schedules (requires AI1WM)
+
+Displays all scheduled backup tasks configured through AI1WM Pro or individual storage extensions, with diagnostics for common issues.
+
+**Sections:**
+- **Issues Detected**: Warnings about problems that may prevent scheduled backups from running:
+  - WP-Cron disabled without a system cron replacement
+  - Schedule events stuck in "Running" state
+  - Enabled events with no upcoming cron entry
+  - Failed last runs (with error messages when available)
+  - Overdue legacy schedules
+- **Schedule Events (Pro)**: Events configured through AI1WM Pro's scheduling system, showing title, type (export/import), storage destination, status, schedule interval, next/last run, and retention policy. Expandable log entries for each event.
+- **Legacy Extension Schedules**: Storage-specific scheduled exports registered by individual AI1WM extensions (e.g., Dropbox daily export, S3 weekly export). Shows storage name, interval, next run, and overdue status.
+- **All AI1WM Cron Entries**: Raw view of every `ai1wm*` hook in the WordPress cron table with recurrence and status.
 
 ### Operations (requires AI1WM)
 
@@ -162,10 +179,11 @@ Generate temporary login links for ServMask support staff to access your site.
 6. The support user can visit the URL to log in automatically
 
 **Managing active tokens:**
-- The **Active Access Tokens** table shows all generated links
-- Use **Copy Link** to copy a token's URL again
+- The **Active Access Tokens** table shows all generated links with their expiration time
 - Use **Revoke** to deactivate a specific token (deletes the temporary user and destroys their sessions)
 - Use **Revoke All** to deactivate all tokens at once
+- Tokens automatically expire after 72 hours (configurable via `AI1WM_DEBUG_TOKEN_TTL` constant in `wp-config.php`)
+- The access URL can only be copied at creation time — it is not stored after generation for security reasons
 
 **Important:** Do not share support links with anyone other than ServMask support staff. Anyone with the link can log in to your site with the selected access level.
 
