@@ -1,0 +1,18 @@
+name: Build
+
+description: Build files for deployment
+
+outputs:
+    ASSET_PATH:
+        description: Asset path to upload
+        value: ${{ steps.build-sh.outputs.ASSET_PATH }}
+    ASSET_NAME:
+        description: Asset name to upload
+        value: ${{ steps.build-sh.outputs.ASSET_NAME }}
+
+runs:
+    using: composite
+    steps:
+        -   id: build-sh
+            run: ${{ github.action_path }}/build.sh
+            shell: bash

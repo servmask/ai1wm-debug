@@ -5,7 +5,7 @@
  * Description: Universal debug and support tool for the ServMask plugin ecosystem
  * Author: ServMask
  * Author URI: https://servmask.com/
- * Version: 1.0.0
+ * Version: develop
  * Network: True
  *
  * Copyright (C) 2014-2026 ServMask Inc.

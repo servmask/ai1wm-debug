@@ -24,7 +24,7 @@
  */
 
 // Version
-define( 'AI1WM_DEBUG_VERSION', '1.0.0' );
+define( 'AI1WM_DEBUG_VERSION', 'develop' );
 
 // Plugin name
 define( 'AI1WM_DEBUG_PLUGIN_NAME', 'servmask-debug' );

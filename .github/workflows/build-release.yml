@@ -1,0 +1,36 @@
+name: Build Release
+
+on:
+  release:
+    types:
+      - prereleased
+      - released
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    name: Build Release
+    env:
+      PLUGIN_NAME: 'servmask-debug'
+      VERSION: ${{ github.ref_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+
+      - name: Build
+        id: build
+        uses: ./.github/actions/build
+
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: ${{ steps.build.outputs.ASSET_PATH }}
