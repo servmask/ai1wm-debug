@@ -85,6 +85,16 @@ class Ai1wm_Debug_Environment {
 				'status' => true,
 			),
 			array(
+				'label'  => 'Upload Tmp Dir',
+				'value'  => ini_get( 'upload_tmp_dir' ) ? ini_get( 'upload_tmp_dir' ) : 'System Default',
+				'status' => is_writable( ini_get( 'upload_tmp_dir' ) ? ini_get( 'upload_tmp_dir' ) : sys_get_temp_dir() ),
+			),
+			array(
+				'label'  => 'File Uploads',
+				'value'  => ai1wm_debug_bool_label( ini_get( 'file_uploads' ) ),
+				'status' => (bool) ini_get( 'file_uploads' ),
+			),
+			array(
 				'label'  => '64-bit Support',
 				'value'  => ai1wm_debug_bool_label( PHP_INT_SIZE > 4 ),
 				'status' => PHP_INT_SIZE > 4,
