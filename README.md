@@ -64,6 +64,16 @@ Override AI1WM filters for debugging without code changes:
 
 One-click report generation aggregating all diagnostic data. Available as JSON download or copyable text format. Includes environment, filesystem, database, plugins, ecosystem, conflicts, and operations data.
 
+## Support Access Best Practices
+
+The token-based support access feature grants a third party temporary login to your site. Treat each token as a live credential.
+
+- **Revoke immediately after the session ends.** Don't wait for the 72-hour expiry. Go to **ServMask Debug > Support** and click Revoke on the active token.
+- **Share the login URL over a secure channel only.** Anyone with the URL can log in until it expires or is revoked. Avoid sending it via plain email or public chat; prefer your support ticket portal or an encrypted message.
+- **Watch the email notification.** When a token is used, the admin who generated it receives an email with the time, IP, and user agent of the session. If you did not expect a session, revoke the token immediately.
+- **Use Debug Only when possible.** Full Administrator access is rarely needed. Debug Only grants access to the debug page and AI1WM operations without exposing the rest of the site.
+- **Review the Audit Log** after every support session to see what was accessed and changed.
+
 ## Architecture
 
 ```

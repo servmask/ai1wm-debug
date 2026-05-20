@@ -282,14 +282,13 @@ class Ai1wm_Debug_Access {
 		// Set support session flag in user meta
 		update_user_meta( $user_id, '_ai1wm_debug_support_session', '1' );
 
-		// Log the login
 		$token_prefix = substr( $token, 0, 8 );
-		Ai1wm_Debug_Audit::log_action( $token_prefix, 'login', 'Support user logged in via token' );
+		$token_hash   = hash( 'sha256', $token );
+		$tokens       = Ai1wm_Debug_Config::get( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, array() );
+		$level        = isset( $tokens[ $token_hash ]['level'] ) ? $tokens[ $token_hash ]['level'] : 'debug_only';
 
-		// Determine redirect based on access level
-		$token_hash = hash( 'sha256', $token );
-		$tokens     = Ai1wm_Debug_Config::get( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, array() );
-		$level      = isset( $tokens[ $token_hash ]['level'] ) ? $tokens[ $token_hash ]['level'] : 'debug_only';
+		Ai1wm_Debug_Audit::log_action( $token_prefix, 'login', 'Support user logged in via token' );
+		self::notify_login( $token_hash, $ip );
 
 		// Prevent token leaking via Referer header
 		header( 'Referrer-Policy: no-referrer' );
@@ -301,6 +300,58 @@ class Ai1wm_Debug_Access {
 			wp_redirect( admin_url() );
 		}
 		exit;
+	}
+
+	/**
+	 * Email the token creator (or site admin) that a support session has started
+	 *
+	 * @param string $token_hash
+	 * @param string $ip
+	 */
+	private static function notify_login( $token_hash, $ip ) {
+		$tokens = Ai1wm_Debug_Config::get( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, array() );
+		if ( ! isset( $tokens[ $token_hash ] ) ) {
+			return;
+		}
+
+		$data = $tokens[ $token_hash ];
+
+		$recipient = '';
+		if ( ! empty( $data['created_by'] ) ) {
+			$creator = get_user_by( 'id', $data['created_by'] );
+			if ( $creator && ! empty( $creator->user_email ) ) {
+				$recipient = $creator->user_email;
+			}
+		}
+
+		if ( empty( $recipient ) ) {
+			$recipient = get_option( 'admin_email' );
+		}
+
+		if ( empty( $recipient ) ) {
+			return;
+		}
+
+		$site_name = get_bloginfo( 'name' );
+		$level     = isset( $data['level'] ) ? $data['level'] : 'debug_only';
+		$username  = isset( $data['username'] ) ? $data['username'] : '';
+		$ua        = isset( $_SERVER['HTTP_USER_AGENT'] ) ? substr( $_SERVER['HTTP_USER_AGENT'], 0, 255 ) : '';
+		$time      = current_time( 'mysql' );
+		$page_url  = admin_url( 'admin.php?page=servmask-debug' );
+
+		$subject = sprintf( '[%s] ServMask Debug support session started', $site_name );
+
+		$message  = "A ServMask Debug support session just started on your site.\n\n";
+		$message .= "Site:         " . site_url() . "\n";
+		$message .= "Time:         " . $time . "\n";
+		$message .= "Access level: " . $level . "\n";
+		$message .= "Support user: " . $username . "\n";
+		$message .= "IP address:   " . $ip . "\n";
+		$message .= "User agent:   " . $ua . "\n\n";
+		$message .= "If you did not expect this session, revoke the token now:\n";
+		$message .= $page_url . "\n";
+
+		wp_mail( $recipient, $subject, $message );
 	}
 
 	/**

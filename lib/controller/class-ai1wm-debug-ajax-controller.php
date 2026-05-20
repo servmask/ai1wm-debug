@@ -140,6 +140,11 @@ class Ai1wm_Debug_Ajax_Controller {
 			$filename = basename( $current );
 		}
 
+		if ( ! preg_match( '/^(export|import)-\d{8}-\d{6}\.php$/', $filename ) ) {
+			echo 'Invalid log file.';
+			exit;
+		}
+
 		$filepath = AI1WM_DEBUG_LOGS_PATH . DIRECTORY_SEPARATOR . $filename;
 		if ( ! file_exists( $filepath ) ) {
 			echo 'Log file not found.';
