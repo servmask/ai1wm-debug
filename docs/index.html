@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ServMask Debug | Diagnostic suite for the AI1WM ecosystem</title>
+<meta name="description" content="Universal debug and support tool for the All-in-One WP Migration plugin ecosystem.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='14' y='14' width='72' height='72' fill='none' stroke='%23D9480F' stroke-width='10'/%3E%3Cpath d='M30 50 L45 65 L70 35' fill='none' stroke='%23D9480F' stroke-width='10' stroke-linecap='square' stroke-linejoin='miter'/%3E%3C/svg%3E">
+<style>
+:root {
+	--bg: #FFFFFF;
+	--bg-soft: #F6F7F8;
+	--bg-code: #F5F5F2;
+	--ink: #1F2328;
+	--ink-dim: #57606A;
+	--subtle: #8B949E;
+	--border: #D8DEE4;
+	--border-soft: #ECEEF1;
+	--accent: #C7400D;
+	--accent-soft: #FBEEE6;
+	--accent-line: rgba(199, 64, 13, 0.18);
+	--signal: #1A7F37;
+
+	--sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+	--mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", "Source Code Pro", Consolas, Menlo, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--bg: #0D1117;
+		--bg-soft: #161B22;
+		--bg-code: #161B22;
+		--ink: #E6EDF3;
+		--ink-dim: #9198A1;
+		--subtle: #6E7681;
+		--border: #30363D;
+		--border-soft: #21262D;
+		--accent: #F0883E;
+		--accent-soft: rgba(240, 136, 62, 0.10);
+		--accent-line: rgba(240, 136, 62, 0.30);
+		--signal: #3FB950;
+	}
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { background: var(--bg); }
+body {
+	font-family: var(--sans);
+	font-size: 15px;
+	line-height: 1.55;
+	color: var(--ink);
+	background: var(--bg);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeLegibility;
+}
+
+::selection { background: var(--accent); color: #fff; }
+a { color: inherit; }
+code { font-family: var(--mono); }
+
+/* === STATUS BAR === */
+.statusbar {
+	border-bottom: 1px solid var(--border);
+	font-family: var(--mono);
+	font-size: 12px;
+	color: var(--ink-dim);
+	background: var(--bg);
+	position: sticky;
+	top: 0;
+	z-index: 10;
+}
+.statusbar-inner {
+	max-width: 1080px;
+	margin: 0 auto;
+	padding: 10px 28px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 16px;
+}
+.statusbar-left, .statusbar-right { display: flex; align-items: center; gap: 10px; }
+.statusbar-right { color: var(--subtle); }
+.statusbar .sep { color: var(--border); }
+.signal-dot {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: var(--signal);
+	display: inline-block;
+	box-shadow: 0 0 0 0 var(--signal);
+	animation: pulse 2.4s infinite;
+	flex-shrink: 0;
+}
+@keyframes pulse {
+	0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--signal) 50%, transparent); }
+	50% { box-shadow: 0 0 0 6px transparent; }
+}
+
+/* === LAYOUT === */
+.container {
+	max-width: 1080px;
+	margin: 0 auto;
+	padding: 0 28px;
+}
+
+/* === HERO === */
+.hero {
+	padding: 72px 0 80px;
+	border-bottom: 1px solid var(--border);
+}
+.hero-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 320px;
+	gap: 56px;
+	align-items: start;
+}
+.tag-row {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+	margin-bottom: 24px;
+}
+.tag {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-family: var(--mono);
+	font-size: 11.5px;
+	color: var(--ink-dim);
+	padding: 3px 9px;
+	border: 1px solid var(--border);
+	border-radius: 999px;
+	background: var(--bg-soft);
+	letter-spacing: 0;
+}
+.tag.accent {
+	color: var(--accent);
+	border-color: var(--accent-line);
+	background: var(--accent-soft);
+}
+.tag .tag-dot {
+	width: 5px;
+	height: 5px;
+	border-radius: 50%;
+	background: currentColor;
+	opacity: 0.6;
+}
+.hero-title {
+	font-family: var(--sans);
+	font-weight: 700;
+	font-size: clamp(40px, 6.5vw, 64px);
+	line-height: 1.05;
+	letter-spacing: -0.025em;
+	margin: 0 0 20px;
+	color: var(--ink);
+}
+.hero-title .slash {
+	color: var(--accent);
+	font-weight: 700;
+	margin: 0 0.05em;
+}
+.hero-tagline {
+	font-size: clamp(16px, 1.5vw, 19px);
+	line-height: 1.5;
+	max-width: 540px;
+	margin: 0 0 36px;
+	color: var(--ink-dim);
+}
+.hero-cta-row {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+	flex-wrap: wrap;
+}
+.btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	background: var(--ink);
+	color: var(--bg);
+	text-decoration: none;
+	padding: 12px 22px;
+	font-family: var(--sans);
+	font-size: 14.5px;
+	font-weight: 600;
+	border: 1px solid var(--ink);
+	border-radius: 6px;
+	transition: background 0.15s ease, transform 0.15s ease;
+}
+.btn:hover {
+	background: var(--accent);
+	border-color: var(--accent);
+}
+.btn:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 3px;
+}
+.btn .arrow {
+	transition: transform 0.15s ease;
+	display: inline-block;
+	font-family: var(--mono);
+	font-weight: 400;
+}
+.btn:hover .arrow { transform: translateX(3px); }
+.cta-meta {
+	font-family: var(--mono);
+	font-size: 12px;
+	color: var(--subtle);
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+.cta-meta .ver { color: var(--ink); }
+
+/* === DIAGNOSTIC BLOCK === */
+.diag {
+	font-family: var(--mono);
+	font-size: 12.5px;
+	line-height: 1.7;
+	background: var(--bg-code);
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	overflow: hidden;
+}
+.diag-head {
+	font-size: 11px;
+	color: var(--subtle);
+	padding: 9px 14px;
+	border-bottom: 1px solid var(--border);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background: var(--bg-soft);
+}
+.diag-head .label { display: flex; gap: 6px; align-items: center; }
+.diag-head .lights { display: flex; gap: 5px; }
+.diag-head .lights span {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: var(--border);
+}
+.diag-head .lights span:first-child { background: var(--accent); opacity: 0.8; }
+.diag-body {
+	padding: 14px 16px 16px;
+}
+.diag-row {
+	display: grid;
+	grid-template-columns: 42px 1fr;
+	gap: 14px;
+}
+.diag-key {
+	color: var(--subtle);
+}
+.diag-val {
+	color: var(--ink);
+	overflow-wrap: anywhere;
+}
+.diag-val.muted { color: var(--ink-dim); }
+.diag-val .ok {
+	color: var(--signal);
+	margin-right: 6px;
+}
+
+/* === SECTION === */
+.section {
+	padding: 80px 0;
+	border-bottom: 1px solid var(--border);
+}
+.section-head { margin-bottom: 40px; }
+.section-label {
+	font-family: var(--mono);
+	font-size: 12px;
+	color: var(--accent);
+	margin-bottom: 14px;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+.section-label::before { content: "//"; opacity: 0.6; }
+.section-title {
+	font-family: var(--sans);
+	font-weight: 700;
+	font-size: clamp(24px, 3vw, 32px);
+	line-height: 1.2;
+	letter-spacing: -0.02em;
+	margin: 0;
+	color: var(--ink);
+	max-width: 720px;
+}
+.section-title em {
+	font-style: normal;
+	color: var(--accent);
+}
+
+/* === FEATURES === */
+.features {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 12px;
+}
+.feature {
+	background: var(--bg-soft);
+	border: 1px solid var(--border-soft);
+	border-radius: 8px;
+	padding: 22px 24px 24px;
+	transition: border-color 0.15s ease;
+}
+.feature:hover { border-color: var(--accent-line); }
+.feature-head {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 12px;
+}
+.feature-num {
+	font-family: var(--mono);
+	font-size: 11.5px;
+	color: var(--accent);
+	background: var(--accent-soft);
+	border: 1px solid var(--accent-line);
+	padding: 2px 7px;
+	border-radius: 4px;
+	font-weight: 500;
+}
+.feature-cat {
+	font-family: var(--mono);
+	font-size: 11.5px;
+	color: var(--subtle);
+}
+.feature-title {
+	font-family: var(--sans);
+	font-size: 16px;
+	font-weight: 600;
+	margin: 0 0 6px;
+	color: var(--ink);
+	letter-spacing: -0.01em;
+}
+.feature-desc {
+	font-size: 14px;
+	line-height: 1.55;
+	color: var(--ink-dim);
+	margin: 0;
+}
+
+/* === INSTALL === */
+.install {
+	background: var(--bg-code);
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	overflow: hidden;
+}
+.install-head {
+	font-family: var(--mono);
+	font-size: 12px;
+	color: var(--subtle);
+	padding: 10px 16px;
+	border-bottom: 1px solid var(--border);
+	background: var(--bg-soft);
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+.install-head .prompt { color: var(--accent); }
+.install-steps {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 0;
+	counter-reset: step;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.install-step {
+	padding: 28px 24px 28px;
+	position: relative;
+	border-right: 1px solid var(--border);
+}
+.install-step:last-child { border-right: none; }
+.install-step-num {
+	font-family: var(--mono);
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--accent);
+	margin-bottom: 8px;
+	display: block;
+}
+.install-step h3 {
+	font-family: var(--sans);
+	font-size: 15px;
+	font-weight: 600;
+	margin: 0 0 10px;
+	color: var(--ink);
+}
+.install-step p {
+	font-size: 14px;
+	line-height: 1.55;
+	color: var(--ink-dim);
+	margin: 0;
+}
+.install-step code {
+	font-family: var(--mono);
+	background: var(--accent-soft);
+	padding: 1px 5px;
+	font-size: 0.92em;
+	color: var(--accent);
+	border-radius: 3px;
+	white-space: nowrap;
+}
+
+/* === RELEASES === */
+.releases {
+	background: var(--bg-code);
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	overflow: hidden;
+}
+.releases-head {
+	display: grid;
+	grid-template-columns: 110px minmax(0, 1fr) 130px 80px;
+	gap: 24px;
+	padding: 10px 20px;
+	background: var(--bg-soft);
+	border-bottom: 1px solid var(--border);
+	font-family: var(--mono);
+	font-size: 11px;
+	color: var(--subtle);
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+}
+.release-row {
+	display: grid;
+	grid-template-columns: 110px minmax(0, 1fr) 130px 80px;
+	gap: 24px;
+	align-items: center;
+	padding: 14px 20px;
+	border-bottom: 1px solid var(--border-soft);
+	font-family: var(--mono);
+	font-size: 13.5px;
+	transition: background 0.15s ease;
+}
+.release-row:last-child { border-bottom: none; }
+.release-row:hover { background: var(--accent-soft); }
+.release-row a {
+	color: var(--ink);
+	text-decoration: none;
+	font-weight: 500;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+.release-row a:hover { color: var(--accent); }
+.release-row a .ext {
+	color: var(--subtle);
+	transition: color 0.15s ease, transform 0.15s ease;
+	display: inline-block;
+}
+.release-row a:hover .ext { color: var(--accent); transform: translateX(3px); }
+.release-date {
+	color: var(--subtle);
+	font-size: 12px;
+}
+.release-tag {
+	color: var(--ink-dim);
+	font-size: 12px;
+}
+.release-status {
+	font-size: 11px;
+	color: var(--subtle);
+	text-align: right;
+	letter-spacing: 0.04em;
+}
+.release-status.is-latest {
+	color: var(--accent);
+	font-weight: 600;
+}
+.release-loading {
+	padding: 24px 20px;
+	color: var(--subtle);
+	font-family: var(--mono);
+	font-size: 13px;
+}
+
+/* === FOOTER === */
+footer {
+	padding: 40px 0 56px;
+	font-family: var(--mono);
+	font-size: 12.5px;
+	color: var(--subtle);
+}
+.footer-grid {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	gap: 32px;
+	align-items: start;
+}
+.footer-links {
+	display: flex;
+	gap: 8px 24px;
+	flex-wrap: wrap;
+	align-items: center;
+}
+.footer-links a {
+	color: var(--ink-dim);
+	text-decoration: none;
+	border-bottom: 1px solid transparent;
+	padding-bottom: 1px;
+	transition: color 0.15s ease, border-color 0.15s ease;
+}
+.footer-links a:hover {
+	color: var(--accent);
+	border-bottom-color: var(--accent);
+}
+.copyright {
+	text-align: right;
+	font-size: 11.5px;
+	line-height: 1.6;
+}
+
+/* === ANIMATION === */
+.reveal {
+	opacity: 0;
+	transform: translateY(8px);
+	animation: reveal 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+.reveal-1 { animation-delay: 60ms; }
+.reveal-2 { animation-delay: 140ms; }
+.reveal-3 { animation-delay: 220ms; }
+.reveal-4 { animation-delay: 300ms; }
+.reveal-5 { animation-delay: 380ms; }
+@keyframes reveal {
+	to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+	.reveal { opacity: 1; transform: none; animation: none; }
+	.signal-dot { animation: none; }
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 920px) {
+	.hero { padding: 56px 0 64px; }
+	.hero-grid {
+		grid-template-columns: 1fr;
+		gap: 40px;
+	}
+	.diag { max-width: 460px; }
+	.section { padding: 64px 0; }
+	.install-steps { grid-template-columns: 1fr; }
+	.install-step { border-right: none; border-bottom: 1px solid var(--border); }
+	.install-step:last-child { border-bottom: none; }
+}
+@media (max-width: 640px) {
+	.container, .statusbar-inner { padding-left: 20px; padding-right: 20px; }
+	.hero { padding: 44px 0 52px; }
+	.features { grid-template-columns: 1fr; }
+	.releases-head,
+	.release-row {
+		grid-template-columns: 1fr auto;
+		gap: 12px;
+		padding: 12px 16px;
+	}
+	.releases-head .col-tag,
+	.releases-head .col-date,
+	.release-row .release-tag,
+	.release-row .release-date { display: none; }
+	.footer-grid { grid-template-columns: 1fr; gap: 20px; }
+	.copyright { text-align: left; }
+	.statusbar-inner { font-size: 11px; }
+	.statusbar-right .hide-mobile { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="statusbar" role="status" aria-label="System status">
+	<div class="statusbar-inner">
+		<div class="statusbar-left">
+			<span class="signal-dot" aria-hidden="true"></span>
+			<span>servmask/ai1wm-debug</span>
+		</div>
+		<div class="statusbar-right">
+			<span class="hide-mobile">WordPress plugin</span>
+			<span class="sep">/</span>
+			<span><span id="sb-version">latest</span></span>
+		</div>
+	</div>
+</div>
+
+<main>
+
+<!-- HERO -->
+<section class="hero">
+	<div class="container">
+		<div class="hero-grid">
+			<div>
+				<div class="tag-row reveal reveal-1">
+					<span class="tag"><span class="tag-dot"></span>WordPress plugin</span>
+					<span class="tag accent" id="hero-version-tag">latest release</span>
+					<span class="tag">GPL-3.0</span>
+				</div>
+				<h1 class="hero-title reveal reveal-2">ServMask<span class="slash">/</span>Debug</h1>
+				<p class="hero-tagline reveal reveal-3">Universal debug and support tool for the All-in-One WP Migration plugin ecosystem. Environment, filesystem, database, plugins, and real-time export/import diagnostics in a single admin page.</p>
+				<div class="hero-cta-row reveal reveal-4">
+					<a id="download-link" class="btn" href="https://github.com/servmask/ai1wm-debug/releases/latest" rel="noopener">
+						Download ZIP
+						<span class="arrow" aria-hidden="true">↓</span>
+					</a>
+					<div class="cta-meta">
+						<span class="ver" id="cta-version">Latest release on GitHub</span>
+						<span id="cta-released"></span>
+					</div>
+				</div>
+			</div>
+			<div class="diag reveal reveal-5" aria-label="Package readout">
+				<div class="diag-head">
+					<span class="label">readout.txt</span>
+					<span class="lights" aria-hidden="true"><span></span><span></span><span></span></span>
+				</div>
+				<div class="diag-body">
+					<div class="diag-row"><span class="diag-key">pkg</span><span class="diag-val">ai1wm-debug</span></div>
+					<div class="diag-row"><span class="diag-key">ver</span><span class="diag-val" id="diag-ver">--</span></div>
+					<div class="diag-row"><span class="diag-key">rel</span><span class="diag-val" id="diag-rel">--</span></div>
+					<div class="diag-row"><span class="diag-key">lic</span><span class="diag-val">GPL-3.0</span></div>
+					<div class="diag-row"><span class="diag-key">php</span><span class="diag-val muted">&gt;= 5.3</span></div>
+					<div class="diag-row"><span class="diag-key">wp</span><span class="diag-val muted">&gt;= 4.0</span></div>
+					<div class="diag-row"><span class="diag-key">env</span><span class="diag-val"><span class="ok" aria-hidden="true">●</span>ready</span></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+	<div class="container">
+		<div class="section-head">
+			<div class="section-label">features</div>
+			<h2 class="section-title">Eleven diagnostic surfaces, one <em>admin page</em>.</h2>
+		</div>
+		<div class="features">
+			<div class="feature">
+				<div class="feature-head">
+					<span class="feature-num">01</span>
+					<span class="feature-cat">environment</span>
+				</div>
+				<h3 class="feature-title">PHP, server, WordPress runtime</h3>
+				<p class="feature-desc">PHP version and SAPI, memory and execution limits, extension presence, server software, WP config, multisite, cron mode.</p>
+			</div>
+			<div class="feature">
+				<div class="feature-head">
+					<span class="feature-num">02</span>
+					<span class="feature-cat">filesystem</span>
+				</div>
+				<h3 class="feature-title">Permissions, ownership, disk</h3>
+				<p class="feature-desc">Per-directory permission, writability and ownership checks for ABSPATH, wp-content, AI1WM storage and backup paths, plus disk space.</p>
+			</div>
+			<div class="feature">
+				<div class="feature-head">
+					<span class="feature-num">03</span>
+					<span class="feature-cat">database</span>
+				</div>
+				<h3 class="feature-title">Schema, sizes, autoload</h3>
+				<p class="feature-desc">MySQL or MariaDB version, charset, collation, table prefix, per-table engine and size, prefixed vs orphaned tables, autoloaded options weight.</p>
+			</div>
+			<div class="feature">
+				<div class="feature-head">
+					<span class="feature-num">04</span>
+					<span class="feature-cat">plugins</span>
+				</div>
+				<h3 class="feature-title">Conflicts and AI1WM ecosystem</h3>
+				<p class="feature-desc">All active and inactive plugins with versions, full AI1WM ecosystem scan with installed vs latest comparison, known-conflict detection.</p>
+			</div>
+			<div class="feature">
+				<div class="feature-head">
+					<span class="feature-num">05</span>
+					<span class="feature-cat">real-time log</span>
+				</div>
+				<h3 class="feature-title">Live export and import stream</h3>
+				<p class="feature-desc">Six logging channels (pipeline, params, status, exclusions, HTTP, errors). Per-run log files. Filter overrides for chunk size, retries, timeouts.</p>
+			</div>
+			<div class="feature">
+				<div class="feature-head">
+					<span class="feature-num">06</span>
+					<span class="feature-cat">support access</span>
+				</div>
+				<h3 class="feature-title">Time-boxed tokens with audit log</h3>
+				<p class="feature-desc">Debug Only or Full Admin tokens, SHA-256 hashed, rate-limited, 72h expiry, email notification on use, complete session audit trail.</p>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- INSTALL -->
+<section class="section" id="install">
+	<div class="container">
+		<div class="section-head">
+			<div class="section-label">install</div>
+			<h2 class="section-title">Three steps. No external <em>dependencies</em>.</h2>
+		</div>
+		<div class="install">
+			<div class="install-head">
+				<span class="prompt">$</span>
+				<span>wp-admin / install-plugin</span>
+			</div>
+			<ol class="install-steps">
+				<li class="install-step">
+					<span class="install-step-num">step 01</span>
+					<h3>Download</h3>
+					<p>Click the Download button above to grab <code>servmask-debug.zip</code> from the latest release.</p>
+				</li>
+				<li class="install-step">
+					<span class="install-step-num">step 02</span>
+					<h3>Upload</h3>
+					<p>In WordPress: <code>Plugins &gt; Add New &gt; Upload Plugin</code>. Choose the ZIP and install.</p>
+				</li>
+				<li class="install-step">
+					<span class="install-step-num">step 03</span>
+					<h3>Activate</h3>
+					<p>Activate the plugin, then open <code>ServMask Debug</code> in the admin sidebar to begin diagnostics.</p>
+				</li>
+			</ol>
+		</div>
+	</div>
+</section>
+
+<!-- RELEASES -->
+<section class="section" id="releases-section">
+	<div class="container">
+		<div class="section-head">
+			<div class="section-label">releases</div>
+			<h2 class="section-title">Recent <em>versions</em>.</h2>
+		</div>
+		<div class="releases">
+			<div class="releases-head">
+				<span class="col-date">date</span>
+				<span class="col-name">name</span>
+				<span class="col-tag">tag</span>
+				<span class="col-status" style="text-align: right;">status</span>
+			</div>
+			<div id="releases">
+				<div class="release-loading">Fetching releases from github.com...</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+	<div class="container">
+		<div class="footer-grid">
+			<div class="footer-links">
+				<a href="https://github.com/servmask/ai1wm-debug">Source</a>
+				<a href="https://github.com/servmask/ai1wm-debug/issues">Issues</a>
+				<a href="https://github.com/servmask/ai1wm-debug/blob/master/README.md">README</a>
+				<a href="https://github.com/servmask/ai1wm-debug/releases">Releases</a>
+			</div>
+			<div class="copyright">
+				(C) 2014-2026 ServMask Inc.<br>
+				Licensed under GPL-3.0-or-later
+			</div>
+		</div>
+	</div>
+</footer>
+
+</main>
+
+<script>
+(function () {
+	var REPO = 'servmask/ai1wm-debug';
+
+	function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+	function isoDate(s) {
+		try {
+			var d = new Date(s);
+			return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+		} catch (e) { return ''; }
+	}
+
+	function readableDate(s) {
+		try {
+			var d = new Date(s);
+			return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: '2-digit' });
+		} catch (e) { return ''; }
+	}
+
+	function setText(id, text) {
+		var el = document.getElementById(id);
+		if (el) el.textContent = text;
+	}
+
+	fetch('https://api.github.com/repos/' + REPO + '/releases/latest')
+		.then(function (r) { if (!r.ok) throw new Error('status ' + r.status); return r.json(); })
+		.then(function (release) {
+			var tag = release.tag_name || '';
+			var asset = (release.assets || []).filter(function (a) { return /\.zip$/i.test(a.name); })[0];
+			if (asset) {
+				var link = document.getElementById('download-link');
+				if (link) link.href = asset.browser_download_url;
+			}
+			setText('sb-version', tag);
+			setText('hero-version-tag', tag);
+			setText('cta-version', 'Version ' + tag);
+			setText('cta-released', release.published_at ? 'Released ' + readableDate(release.published_at) : '');
+			setText('diag-ver', tag);
+			setText('diag-rel', release.published_at ? isoDate(release.published_at) : '');
+		})
+		.catch(function () {
+			setText('sb-version', 'latest');
+			setText('hero-version-tag', 'latest release');
+			setText('cta-version', 'Latest release on GitHub');
+			setText('diag-ver', 'unavailable');
+			setText('diag-rel', 'unavailable');
+		});
+
+	fetch('https://api.github.com/repos/' + REPO + '/releases?per_page=5')
+		.then(function (r) { if (!r.ok) throw new Error('status ' + r.status); return r.json(); })
+		.then(function (releases) {
+			var container = document.getElementById('releases');
+			if (!container) return;
+			if (!releases.length) {
+				container.innerHTML = '<div class="release-loading">No releases published yet.</div>';
+				return;
+			}
+			container.innerHTML = '';
+			releases.forEach(function (r, i) {
+				var row = document.createElement('div');
+				row.className = 'release-row';
+
+				var date = document.createElement('span');
+				date.className = 'release-date';
+				date.textContent = r.published_at ? isoDate(r.published_at) : '';
+				row.appendChild(date);
+
+				var nameWrap = document.createElement('span');
+				var a = document.createElement('a');
+				a.href = r.html_url;
+				a.rel = 'noopener';
+				a.innerHTML = '';
+				var nameText = document.createTextNode(r.name || r.tag_name);
+				a.appendChild(nameText);
+				var ext = document.createElement('span');
+				ext.className = 'ext';
+				ext.textContent = '↗';
+				a.appendChild(ext);
+				nameWrap.appendChild(a);
+				row.appendChild(nameWrap);
+
+				var tag = document.createElement('span');
+				tag.className = 'release-tag';
+				tag.textContent = r.tag_name;
+				row.appendChild(tag);
+
+				var status = document.createElement('span');
+				status.className = 'release-status' + (i === 0 ? ' is-latest' : '');
+				status.textContent = i === 0 ? 'latest' : (r.prerelease ? 'pre' : 'release');
+				row.appendChild(status);
+
+				container.appendChild(row);
+			});
+		})
+		.catch(function () {
+			var container = document.getElementById('releases');
+			if (container) {
+				container.innerHTML = '<div class="release-loading"><a href="https://github.com/' + REPO + '/releases" style="color: var(--accent); text-decoration: none;">See releases on GitHub ↗</a></div>';
+			}
+		});
+})();
+</script>
+</body>
+</html>
