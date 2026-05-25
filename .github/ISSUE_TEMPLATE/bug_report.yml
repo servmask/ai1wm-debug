@@ -1,0 +1,89 @@
+name: Bug Report
+description: Report a bug in the ServMask Debug plugin
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce this bug?
+      placeholder: |
+        1. Open ServMask Debug in WordPress admin
+        2. Go to the X tab
+        3. Click Y
+        4. Observe the error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: input
+    id: plugin_version
+    attributes:
+      label: ServMask Debug version
+      description: See the plugin header in the Plugins admin page, or `AI1WM_DEBUG_VERSION` in `constants.php`.
+      placeholder: e.g. 1.0.0
+    validations:
+      required: true
+
+  - type: input
+    id: wp_version
+    attributes:
+      label: WordPress version
+      placeholder: e.g. 6.6.2
+    validations:
+      required: true
+
+  - type: input
+    id: php_version
+    attributes:
+      label: PHP version
+      placeholder: e.g. 8.2.10
+    validations:
+      required: true
+
+  - type: dropdown
+    id: ai1wm_installed
+    attributes:
+      label: Is All-in-One WP Migration installed?
+      options:
+        - "Yes, active"
+        - "Yes, installed but not active"
+        - "No"
+    validations:
+      required: true
+
+  - type: input
+    id: ai1wm_version
+    attributes:
+      label: AI1WM version (and any extensions)
+      description: If AI1WM is installed, which version, and which extensions (Pro, Unlimited, Multisite) are active?
+      placeholder: e.g. AI1WM 7.85, Pro 8.10
+
+  - type: textarea
+    id: other_plugins
+    attributes:
+      label: Other active plugins
+      description: Any caching, security, or optimization plugins active? They commonly cause conflicts.
+      placeholder: e.g. W3 Total Cache, Wordfence
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or screenshots
+      description: Paste any relevant lines from the WordPress debug log, the plugin's real-time log, or the downloadable diagnostic report (drag the file into this field).
