@@ -1,0 +1,69 @@
+name: CI
+
+on:
+    push:
+        branches:
+            - master
+    pull_request:
+    release:
+        types:
+            - prereleased
+            - released
+
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+        name: PHPCS (WordPress-Core, PHP 5.3+ compat)
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Install PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.4'
+                  coverage: none
+                  tools: composer:v2
+
+            - name: Cache Composer packages
+              uses: actions/cache@v4
+              with:
+                  path: vendor
+                  key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+                  restore-keys: ${{ runner.os }}-composer-
+
+            - name: Install dependencies
+              run: composer install --no-interaction --prefer-dist --no-progress
+
+            - name: Run PHPCS
+              run: composer phpcs -- --report=full --colors
+
+    build:
+        runs-on: ubuntu-latest
+        name: Build release asset
+        needs: lint
+        if: github.event_name == 'release'
+        env:
+            PLUGIN_NAME: 'servmask-debug'
+            VERSION: ${{ github.ref_name }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Install PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.4'
+
+            - name: Build
+              id: build
+              uses: ./.github/actions/build
+
+            - name: Upload release asset
+              uses: softprops/action-gh-release@v2
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  files: ${{ steps.build.outputs.ASSET_PATH }}
