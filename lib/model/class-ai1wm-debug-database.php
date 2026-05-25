@@ -34,14 +34,14 @@ class Ai1wm_Debug_Database {
 		global $wpdb;
 
 		return array(
-			'version'          => self::get_version(),
-			'name'             => $wpdb->dbname,
-			'host'             => $wpdb->dbhost,
-			'charset'          => $wpdb->charset,
-			'collate'          => $wpdb->collate,
-			'prefix'           => $wpdb->prefix,
-			'total_size'       => self::get_total_size(),
-			'autoloaded_size'  => self::get_autoloaded_size(),
+			'version'         => self::get_version(),
+			'name'            => $wpdb->dbname,
+			'host'            => $wpdb->dbhost,
+			'charset'         => $wpdb->charset,
+			'collate'         => $wpdb->collate,
+			'prefix'          => $wpdb->prefix,
+			'total_size'      => self::get_total_size(),
+			'autoloaded_size' => self::get_autoloaded_size(),
 		);
 	}
 
@@ -63,12 +63,14 @@ class Ai1wm_Debug_Database {
 	public static function get_total_size() {
 		global $wpdb;
 
-		$result = $wpdb->get_var( $wpdb->prepare(
-			"SELECT SUM(data_length + index_length)
+		$result = $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT SUM(data_length + index_length)
 			 FROM information_schema.TABLES
-			 WHERE table_schema = %s",
-			$wpdb->dbname
-		) );
+			 WHERE table_schema = %s',
+				$wpdb->dbname
+			)
+		);
 
 		return $result ? ai1wm_debug_size_format( $result, 2 ) : 'Unknown';
 	}
@@ -101,8 +103,9 @@ class Ai1wm_Debug_Database {
 		$prefixed     = array();
 		$non_prefixed = array();
 
-		$results = $wpdb->get_results( $wpdb->prepare(
-			"SELECT
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT
 				table_name AS 'name',
 				engine AS 'engine',
 				table_rows AS 'rows',
@@ -112,8 +115,10 @@ class Ai1wm_Debug_Database {
 			 FROM information_schema.TABLES
 			 WHERE table_schema = %s
 			 ORDER BY (data_length + index_length) DESC",
-			$wpdb->dbname
-		), ARRAY_A );
+				$wpdb->dbname
+			),
+			ARRAY_A
+		);
 
 		if ( $results ) {
 			foreach ( $results as $row ) {

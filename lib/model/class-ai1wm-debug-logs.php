@@ -82,7 +82,7 @@ class Ai1wm_Debug_Logs {
 			if ( $dir ) {
 				while ( ( $entry = readdir( $dir ) ) !== false ) {
 					if ( preg_match( '/^error-log-.+\.log$/', $entry ) ) {
-						$path = AI1WM_STORAGE_PATH . DIRECTORY_SEPARATOR . $entry;
+						$path    = AI1WM_STORAGE_PATH . DIRECTORY_SEPARATOR . $entry;
 						$files[] = array(
 							'key'   => 'ai1wm_' . sanitize_key( $entry ),
 							'label' => 'AI1WM ' . $entry,

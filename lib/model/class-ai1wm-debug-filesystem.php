@@ -103,13 +103,13 @@ class Ai1wm_Debug_Filesystem {
 
 			// Ownership
 			if ( $exists ) {
-				$entry['owner'] = ai1wm_debug_get_file_owner( $path );
-				$entry['group'] = ai1wm_debug_get_file_group( $path );
+				$entry['owner']       = ai1wm_debug_get_file_owner( $path );
+				$entry['group']       = ai1wm_debug_get_file_group( $path );
 				$entry['owner_match'] = ( $entry['owner'] === $process_user );
 				$entry['group_match'] = ( $entry['group'] === $process_group );
 			} else {
-				$entry['owner'] = 'N/A';
-				$entry['group'] = 'N/A';
+				$entry['owner']       = 'N/A';
+				$entry['group']       = 'N/A';
 				$entry['owner_match'] = true;
 				$entry['group_match'] = true;
 			}
@@ -132,11 +132,11 @@ class Ai1wm_Debug_Filesystem {
 		$total = function_exists( 'disk_total_space' ) ? @disk_total_space( $path ) : false;
 
 		return array(
-			'free'       => $free !== false ? ai1wm_debug_size_format( $free, 2 ) : 'Unavailable',
-			'total'      => $total !== false ? ai1wm_debug_size_format( $total, 2 ) : 'Unavailable',
+			'free'        => $free !== false ? ai1wm_debug_size_format( $free, 2 ) : 'Unavailable',
+			'total'       => $total !== false ? ai1wm_debug_size_format( $total, 2 ) : 'Unavailable',
 			'free_bytes'  => $free !== false ? $free : 0,
 			'total_bytes' => $total !== false ? $total : 0,
-			'status'     => $free !== false && $free > 100 * 1048576,
+			'status'      => $free !== false && $free > 100 * 1048576,
 		);
 	}
 

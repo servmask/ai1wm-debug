@@ -60,7 +60,7 @@ class Ai1wm_Debug_Config {
 		if ( file_exists( $file ) ) {
 			$content = @file_get_contents( $file );
 			if ( $content !== false ) {
-				$json = preg_replace( '/^<\?php\s+exit;\s*\?>\s*/', '', $content );
+				$json    = preg_replace( '/^<\?php\s+exit;\s*\?>\s*/', '', $content );
 				$decoded = json_decode( $json, true );
 				if ( is_array( $decoded ) ) {
 					self::$data = $decoded;
@@ -88,6 +88,7 @@ class Ai1wm_Debug_Config {
 
 		@file_put_contents(
 			self::file_path(),
+			// phpcs:ignore PHPCompatibility.Constants.NewConstants.json_pretty_printFound -- polyfilled in constants.php for PHP <5.4.
 			self::PHP_GUARD . json_encode( self::$data, JSON_PRETTY_PRINT ),
 			LOCK_EX
 		);

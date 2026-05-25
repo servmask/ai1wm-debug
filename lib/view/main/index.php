@@ -1,4 +1,5 @@
-<?php if ( ! defined( 'ABSPATH' ) ) { die( 'Kangaroos cannot fly!' ); } ?>
+<?php if ( ! defined( 'ABSPATH' ) ) {
+	die( 'Kangaroos cannot fly!' ); } ?>
 
 <div class="wrap">
 	<h1>ServMask Debug</h1>
@@ -6,7 +7,7 @@
 	<nav class="nav-tab-wrapper">
 		<?php foreach ( $tabs as $slug => $label ) : ?>
 			<a href="<?php echo esc_url( add_query_arg( 'tab', $slug, admin_url( 'admin.php?page=servmask-debug' ) ) ); ?>"
-			   class="nav-tab <?php echo $current_tab === $slug ? 'nav-tab-active' : ''; ?>">
+				class="nav-tab <?php echo $current_tab === $slug ? 'nav-tab-active' : ''; ?>">
 				<?php echo esc_html( $label ); ?>
 			</a>
 		<?php endforeach; ?>
@@ -20,11 +21,11 @@
 
 	<div>
 		<a href="<?php echo esc_url( admin_url( 'admin-ajax.php?action=ai1wm_debug_download_report&format=text&nonce=' . wp_create_nonce( AI1WM_DEBUG_NONCE ) ) ); ?>"
-		   class="button button-primary" id="ai1wm-debug-download-text">
+			class="button button-primary" id="ai1wm-debug-download-text">
 			Download Report (Text)
 		</a>
 		<a href="<?php echo esc_url( admin_url( 'admin-ajax.php?action=ai1wm_debug_download_report&format=json&nonce=' . wp_create_nonce( AI1WM_DEBUG_NONCE ) ) ); ?>"
-		   class="button" id="ai1wm-debug-download-json">
+			class="button" id="ai1wm-debug-download-json">
 			Download Report (JSON)
 		</a>
 		<button type="button" class="button" id="ai1wm-debug-copy-report">

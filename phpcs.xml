@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<ruleset name="ServMask Debug">
+	<description>ServMask Debug coding standard, aligned with the All-in-One WP Migration ecosystem.</description>
+
+	<!-- Include specific PHP files -->
+	<file>./lib</file>
+	<file>./constants.php</file>
+	<file>./functions.php</file>
+	<file>./loader.php</file>
+	<file>./servmask-debug.php</file>
+	<file>./uninstall.php</file>
+
+	<!-- Exclude static assets, vendor, build, runtime, docs -->
+	<exclude-pattern>./lib/view/assets/*</exclude-pattern>
+	<exclude-pattern>./vendor/*</exclude-pattern>
+	<exclude-pattern>./node_modules/*</exclude-pattern>
+	<exclude-pattern>./dist/*</exclude-pattern>
+	<exclude-pattern>./storage/*</exclude-pattern>
+	<exclude-pattern>./docs/*</exclude-pattern>
+
+	<!-- Include only PHP files -->
+	<arg name="extensions" value="php"/>
+
+	<!-- Minimum PHP 5.3 support -->
+	<config name="testVersion" value="5.3-"/>
+
+	<!-- PHPCompatibility configuration -->
+	<rule ref="PHPCompatibility"/>
+
+	<rule ref="WordPress-Core">
+		<exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+		<exclude name="WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound"/>
+		<exclude name="WordPress.DB.RestrictedFunctions"/>
+		<exclude name="WordPress.DB.PreparedSQL.NotPrepared"/>
+		<exclude name="WordPress.PHP.YodaConditions"/>
+		<exclude name="WordPress.PHP.NoSilencedErrors.Discouraged"/>
+		<exclude name="WordPress.PHP.StrictInArray.MissingTrueStrict"/>
+		<exclude name="WordPress.WP.I18n"/>
+		<exclude name="WordPress.DateTime.RestrictedFunctions.date_date"/>
+		<exclude name="WordPress.DateTime.CurrentTimeTimestamp.Requested"/>
+		<exclude name="Squiz.PHP.DisallowMultipleAssignments.Found"/>
+		<exclude name="Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure"/>
+		<exclude name="Generic.Files.OneObjectStructurePerFile"/>
+		<exclude name="Generic.CodeAnalysis.AssignmentInCondition"/>
+		<exclude name="Universal.Operators.DisallowShortTernary.Found"/>
+		<exclude name="Universal.Operators.DisallowStandalonePostIncrementDecrement"/>
+		<exclude name="Universal.NamingConventions.NoReservedKeywordParameterNames"/>
+		<exclude name="PHPCompatibility.Miscellaneous.ValidIntegers.HexNumericStringFound"/>
+		<exclude name="PHPCompatibility.Extensions.RemovedExtensions.mysql_DeprecatedRemoved"/>
+	</rule>
+
+	<rule ref="WordPress.Arrays.MultipleStatementAlignment">
+		<properties>
+			<property name="maxColumn" value="80"/>
+		</properties>
+	</rule>
+
+	<!-- Register prefixes for the PrefixAllGlobals sniff -->
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="ai1wm_debug"/>
+				<element value="Ai1wm_Debug"/>
+				<element value="AI1WM_DEBUG"/>
+			</property>
+		</properties>
+		<!-- View files use the extract() pattern, so local-scope vars are unprefixed by design -->
+		<exclude-pattern>./lib/view/*</exclude-pattern>
+	</rule>
+</ruleset>

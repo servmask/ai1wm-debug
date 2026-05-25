@@ -1,4 +1,5 @@
-<?php if ( ! defined( 'ABSPATH' ) ) { die( 'Kangaroos cannot fly!' ); } ?>
+<?php if ( ! defined( 'ABSPATH' ) ) {
+	die( 'Kangaroos cannot fly!' ); } ?>
 
 <h2>Scheduled Tasks</h2>
 
@@ -45,15 +46,17 @@
 						<td><?php echo esc_html( $event['type'] ); ?></td>
 						<td><?php echo esc_html( $event['storage'] ); ?></td>
 						<td>
-							<span class="ai1wm-debug-status ai1wm-debug-status-<?php
-								if ( $event['is_running'] ) {
-									echo 'warn';
-								} elseif ( $event['status'] === 'Enabled' ) {
-									echo 'ok';
-								} else {
-									echo 'neutral';
-								}
-							?>">
+							<span class="ai1wm-debug-status ai1wm-debug-status-
+							<?php
+							if ( $event['is_running'] ) {
+								echo 'warn';
+							} elseif ( $event['status'] === 'Enabled' ) {
+								echo 'ok';
+							} else {
+								echo 'neutral';
+							}
+							?>
+							">
 								<?php
 								if ( $event['is_running'] ) {
 									echo 'Running';
@@ -66,17 +69,19 @@
 						<td><?php echo esc_html( $event['schedule'] ); ?></td>
 						<td><?php echo $event['next_run'] ? esc_html( $event['next_run'] ) : '<em>Not scheduled</em>'; ?></td>
 						<td>
-							<span class="ai1wm-debug-status ai1wm-debug-status-<?php
-								if ( $event['last_run'] === 'Failed' ) {
-									echo 'error';
-								} elseif ( $event['last_run'] === 'Success' ) {
-									echo 'ok';
-								} elseif ( $event['last_run'] === 'Running' ) {
-									echo 'warn';
-								} else {
-									echo 'neutral';
-								}
-							?>">
+							<span class="ai1wm-debug-status ai1wm-debug-status-
+							<?php
+							if ( $event['last_run'] === 'Failed' ) {
+								echo 'error';
+							} elseif ( $event['last_run'] === 'Success' ) {
+								echo 'ok';
+							} elseif ( $event['last_run'] === 'Running' ) {
+								echo 'warn';
+							} else {
+								echo 'neutral';
+							}
+							?>
+							">
 								<?php echo esc_html( $event['last_run'] ); ?>
 							</span>
 						</td>
@@ -87,15 +92,17 @@
 							<td colspan="8" style="padding: 0;">
 								<details style="padding: 8px 10px;">
 									<summary style="cursor: pointer; font-size: 12px;">Recent log entries (<?php echo count( $event['recent_logs'] ); ?>)</summary>
-									<pre class="ai1wm-debug-log-content" style="margin: 8px 0 0; max-height: 150px; overflow: auto; font-size: 12px;"><?php
-										foreach ( $event['recent_logs'] as $log ) {
-											$log = (array) $log;
-											$time    = isset( $log['time'] ) ? date( 'Y-m-d H:i:s', $log['time'] ) : '?';
-											$status  = isset( $log['status'] ) ? $log['status'] : '?';
-											$message = isset( $log['message'] ) && $log['message'] ? ' - ' . $log['message'] : '';
-											echo esc_html( '[' . $time . '] ' . $status . $message ) . "\n";
-										}
-									?></pre>
+									<pre class="ai1wm-debug-log-content" style="margin: 8px 0 0; max-height: 150px; overflow: auto; font-size: 12px;">
+									<?php
+									foreach ( $event['recent_logs'] as $log ) {
+										$log     = (array) $log;
+										$time    = isset( $log['time'] ) ? date( 'Y-m-d H:i:s', $log['time'] ) : '?';
+										$status  = isset( $log['status'] ) ? $log['status'] : '?';
+										$message = isset( $log['message'] ) && $log['message'] ? ' - ' . $log['message'] : '';
+										echo esc_html( '[' . $time . '] ' . $status . $message ) . "\n";
+									}
+									?>
+									</pre>
 								</details>
 							</td>
 						</tr>

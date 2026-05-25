@@ -62,3 +62,8 @@ define( 'AI1WM_DEBUG_VIEW_CAPABILITY', 'ai1wm_debug_view' );
 
 // Nonce
 define( 'AI1WM_DEBUG_NONCE', 'ai1wm_debug_nonce' );
+
+// Polyfill JSON_PRETTY_PRINT for PHP 5.3 (constant added in 5.4). Older runtimes accept the flag value silently.
+if ( ! defined( 'JSON_PRETTY_PRINT' ) ) {
+	define( 'JSON_PRETTY_PRINT', 128 );
+}

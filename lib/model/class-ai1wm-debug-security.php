@@ -51,6 +51,7 @@ class Ai1wm_Debug_Security {
 		$stored_key = self::get_secret_key();
 
 		if ( function_exists( 'hash_equals' ) ) {
+			// phpcs:ignore PHPCompatibility.FunctionUse.NewFunctions.hash_equalsFound -- guarded by function_exists above.
 			return hash_equals( $stored_key, $provided_key );
 		}
 
@@ -61,7 +62,7 @@ class Ai1wm_Debug_Security {
 
 		$result = 0;
 		for ( $i = 0, $len = strlen( $stored_key ); $i < $len; $i++ ) {
-			$result |= ord( $stored_key[$i] ) ^ ord( $provided_key[$i] );
+			$result |= ord( $stored_key[ $i ] ) ^ ord( $provided_key[ $i ] );
 		}
 
 		return $result === 0;
@@ -86,6 +87,7 @@ class Ai1wm_Debug_Security {
 	 */
 	public static function generate_random_hex( $length = 32 ) {
 		if ( function_exists( 'random_bytes' ) ) {
+			// phpcs:ignore PHPCompatibility.FunctionUse.NewFunctions.random_bytesFound -- guarded by function_exists above.
 			return bin2hex( random_bytes( $length / 2 ) );
 		}
 

@@ -1,4 +1,5 @@
-<?php if ( ! defined( 'ABSPATH' ) ) { die( 'Kangaroos cannot fly!' ); } ?>
+<?php if ( ! defined( 'ABSPATH' ) ) {
+	die( 'Kangaroos cannot fly!' ); } ?>
 
 <?php $log_files = Ai1wm_Debug_Logs::get_log_files(); ?>
 

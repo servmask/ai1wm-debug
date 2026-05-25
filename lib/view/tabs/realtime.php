@@ -1,4 +1,5 @@
-<?php if ( ! defined( 'ABSPATH' ) ) { die( 'Kangaroos cannot fly!' ); } ?>
+<?php if ( ! defined( 'ABSPATH' ) ) {
+	die( 'Kangaroos cannot fly!' ); } ?>
 
 <h2>Real-time AI1WM Logging</h2>
 
@@ -63,7 +64,10 @@
 		<select id="ai1wm-debug-run-select">
 			<option value="">Current run (live)</option>
 			<?php foreach ( $run_logs as $log ) : ?>
-				<?php if ( $log['current'] ) continue; ?>
+				<?php
+				if ( $log['current'] ) {
+					continue;}
+				?>
 				<option value="<?php echo esc_attr( $log['filename'] ); ?>">
 					<?php echo esc_html( ucfirst( $log['type'] ) . ' — ' . $log['date'] . ' (' . ai1wm_debug_size_format( $log['size'], 2 ) . ')' ); ?>
 				</option>
@@ -82,10 +86,10 @@
 	<hr style="margin: 2em 0;" />
 
 	<?php
-		$overrides      = Ai1wm_Debug_Filters::get_overrides();
-		$presets        = Ai1wm_Debug_Filters::get_preset_definitions();
-		$export_stages  = Ai1wm_Debug_Filters::get_export_stages();
-		$import_stages  = Ai1wm_Debug_Filters::get_import_stages();
+		$overrides     = Ai1wm_Debug_Filters::get_overrides();
+		$presets       = Ai1wm_Debug_Filters::get_preset_definitions();
+		$export_stages = Ai1wm_Debug_Filters::get_export_stages();
+		$import_stages = Ai1wm_Debug_Filters::get_import_stages();
 	?>
 
 	<h2>Filter Overrides</h2>
@@ -103,12 +107,13 @@
 			</tr>
 		</thead>
 		<tbody>
-			<?php foreach ( $presets as $key => $def ) :
-				$saved   = isset( $overrides['presets'][ $key ] ) ? $overrides['presets'][ $key ] : array();
-				$on      = ! empty( $saved['enabled'] );
-				$value   = isset( $saved['value'] ) ? $saved['value'] : $def['default'];
-				$steps   = isset( $saved['steps'] ) ? $saved['steps'] : '';
-			?>
+			<?php
+			foreach ( $presets as $key => $def ) :
+				$saved = isset( $overrides['presets'][ $key ] ) ? $overrides['presets'][ $key ] : array();
+				$on    = ! empty( $saved['enabled'] );
+				$value = isset( $saved['value'] ) ? $saved['value'] : $def['default'];
+				$steps = isset( $saved['steps'] ) ? $saved['steps'] : '';
+				?>
 			<tr>
 				<td><input type="checkbox" class="ai1wm-debug-preset-enabled" data-key="<?php echo esc_attr( $key ); ?>" <?php checked( $on ); ?> /></td>
 				<td>
@@ -172,7 +177,7 @@
 		);
 		foreach ( $exclusion_labels as $key => $label ) :
 			$val = isset( $overrides['exclusions'][ $key ] ) ? $overrides['exclusions'][ $key ] : '';
-		?>
+			?>
 		<tr>
 			<th scope="row"><?php echo esc_html( $label ); ?></th>
 			<td><textarea class="ai1wm-debug-exclusion" data-key="<?php echo esc_attr( $key ); ?>" rows="3" cols="50" placeholder="e.g. path/to/folder"><?php echo esc_textarea( $val ); ?></textarea></td>

@@ -46,7 +46,7 @@ class Ai1wm_Debug_Environment {
 	public static function get_php_info() {
 		$memory_limit       = ini_get( 'memory_limit' );
 		$memory_limit_bytes = ai1wm_debug_to_bytes( $memory_limit );
-		$max_execution_time = ini_get( 'max_execution_time' );
+		$max_execution_time = (int) ini_get( 'max_execution_time' );
 
 		$data = array(
 			array(
@@ -67,10 +67,11 @@ class Ai1wm_Debug_Environment {
 			array(
 				'label'  => 'Max Execution Time',
 				'value'  => $max_execution_time . 's',
-				'status' => $max_execution_time >= 30 || $max_execution_time == 0,
+				'status' => $max_execution_time >= 30 || $max_execution_time === 0,
 			),
 			array(
 				'label'  => 'Max Input Vars',
+				// phpcs:ignore PHPCompatibility.IniDirectives.NewIniDirectives.max_input_varsFound -- ini_get returns false on PHP <5.3.8, which is acceptable for diagnostics.
 				'value'  => ini_get( 'max_input_vars' ),
 				'status' => true,
 			),
@@ -103,8 +104,17 @@ class Ai1wm_Debug_Environment {
 
 		// PHP extensions
 		$extensions = array(
-			'curl', 'openssl', 'ftp', 'bcmath', 'libxml',
-			'simplexml', 'xml', 'mbstring', 'json', 'zip', 'zlib',
+			'curl',
+			'openssl',
+			'ftp',
+			'bcmath',
+			'libxml',
+			'simplexml',
+			'xml',
+			'mbstring',
+			'json',
+			'zip',
+			'zlib',
 		);
 
 		foreach ( $extensions as $ext ) {
@@ -135,7 +145,7 @@ class Ai1wm_Debug_Environment {
 
 		// MySQL connect timeout
 		$mysql_timeout = ini_get( 'mysql.connect_timeout' );
-		$data[] = array(
+		$data[]        = array(
 			'label'  => 'MySQL Connect Timeout',
 			'value'  => $mysql_timeout ? $mysql_timeout : '0',
 			'status' => true,

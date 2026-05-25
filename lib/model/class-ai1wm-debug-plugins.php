@@ -128,11 +128,11 @@ class Ai1wm_Debug_Plugins {
 		$base_latest    = $base_installed ? ai1wm_debug_get_base_plugin_latest_version() : '';
 
 		$ecosystem[] = array(
-			'name'      => 'All-in-One WP Migration (Base)',
-			'constant'  => 'AI1WM_PLUGIN_NAME',
-			'installed' => $base_installed,
-			'version'   => $base_version,
-			'latest'    => $base_latest,
+			'name'       => 'All-in-One WP Migration (Base)',
+			'constant'   => 'AI1WM_PLUGIN_NAME',
+			'installed'  => $base_installed,
+			'version'    => $base_version,
+			'latest'     => $base_latest,
 			'up_to_date' => empty( $base_latest ) || $base_latest === $base_version,
 		);
 
@@ -192,13 +192,13 @@ class Ai1wm_Debug_Plugins {
 
 		// TODO: Confirm plugin list and descriptions with support team
 		$known = array(
-			'w3-total-cache/w3-total-cache.php'       => 'W3 Total Cache may interfere with large imports due to object caching.',
-			'wp-super-cache/wp-cache.php'              => 'WP Super Cache may serve stale pages after import.',
-			'wordfence/wordfence.php'                  => 'Wordfence firewall may block large file uploads during import.',
-			'sucuri-scanner/sucuri.php'                => 'Sucuri may flag import operations as suspicious.',
-			'jetpack/jetpack.php'                      => 'Jetpack sync may cause performance issues during large imports.',
-			'updraftplus/updraftplus.php'              => 'UpdraftPlus backup schedules may conflict with AI1WM operations.',
-			'backwpup/backwpup.php'                    => 'BackWPup schedules may conflict with AI1WM operations.',
+			'w3-total-cache/w3-total-cache.php'         => 'W3 Total Cache may interfere with large imports due to object caching.',
+			'wp-super-cache/wp-cache.php'               => 'WP Super Cache may serve stale pages after import.',
+			'wordfence/wordfence.php'                   => 'Wordfence firewall may block large file uploads during import.',
+			'sucuri-scanner/sucuri.php'                 => 'Sucuri may flag import operations as suspicious.',
+			'jetpack/jetpack.php'                       => 'Jetpack sync may cause performance issues during large imports.',
+			'updraftplus/updraftplus.php'               => 'UpdraftPlus backup schedules may conflict with AI1WM operations.',
+			'backwpup/backwpup.php'                     => 'BackWPup schedules may conflict with AI1WM operations.',
 			'better-wp-security/better-wp-security.php' => 'iThemes Security may block file operations during import.',
 		);
 

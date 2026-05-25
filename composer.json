@@ -1,0 +1,29 @@
+{
+	"name": "servmask/ai1wm-debug",
+	"description": "Universal debug and support tool for the All-in-One WP Migration plugin ecosystem.",
+	"type": "wordpress-plugin",
+	"license": "GPL-3.0-or-later",
+	"homepage": "https://debug.wp-migration.com",
+	"support": {
+		"issues": "https://github.com/servmask/ai1wm-debug/issues",
+		"source": "https://github.com/servmask/ai1wm-debug"
+	},
+	"require": {
+		"php": ">=5.3"
+	},
+	"require-dev": {
+		"squizlabs/php_codesniffer": "~3.13.4",
+		"wp-coding-standards/wpcs": "~3.2.0",
+		"dealerdirect/phpcodesniffer-composer-installer": "~1.1.2",
+		"phpcompatibility/php-compatibility": "*"
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		}
+	},
+	"scripts": {
+		"phpcs": "phpcs",
+		"phpcbf": "phpcbf"
+	}
+}

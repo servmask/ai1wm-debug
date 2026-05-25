@@ -58,10 +58,12 @@ class Ai1wm_Debug_Report {
 		$output = '';
 
 		$output .= self::section_title( 'ServMask Debug Report' );
-		$output .= self::table( array(
-			array( 'Generated', $report['generated_at'] ),
-			array( 'Plugin Version', $report['plugin'] ),
-		) );
+		$output .= self::table(
+			array(
+				array( 'Generated', $report['generated_at'] ),
+				array( 'Plugin Version', $report['plugin'] ),
+			)
+		);
 
 		// PHP
 		$output .= self::section_title( 'PHP' );
@@ -82,7 +84,7 @@ class Ai1wm_Debug_Report {
 			if ( ! $dir['exists'] ) {
 				$fs_rows[] = array( $dir['label'], 'MISSING' );
 			} else {
-				$props = array();
+				$props   = array();
 				$props[] = $dir['writable'] ? 'Writable' : 'NOT WRITABLE';
 				$props[] = $dir['perms'];
 				if ( ! empty( $dir['owner'] ) && $dir['owner'] !== 'N/A' ) {
@@ -97,24 +99,26 @@ class Ai1wm_Debug_Report {
 		$fs_rows[] = array( 'Disk Free', $report['filesystem']['disk']['free'] );
 		$fs_rows[] = array( 'Disk Total', $report['filesystem']['disk']['total'] );
 		$fs_rows[] = array( 'Temp Dir', $report['filesystem']['temp']['path'] . ' (' . ( $report['filesystem']['temp']['writable'] ? 'Writable' : 'NOT WRITABLE' ) . ')' );
-		$output .= self::table( $fs_rows );
+		$output   .= self::table( $fs_rows );
 
 		// Database
 		$output .= self::section_title( 'Database' );
-		$db = $report['database'];
-		$output .= self::table( array(
-			array( 'Version', $db['version'] ),
-			array( 'Name', $db['name'] ),
-			array( 'Host', $db['host'] ),
-			array( 'Charset', $db['charset'] ),
-			array( 'Table Prefix', $db['prefix'] ),
-			array( 'Total Size', $db['total_size'] ),
-			array( 'Autoloaded', $db['autoloaded_size'] ),
-		) );
+		$db      = $report['database'];
+		$output .= self::table(
+			array(
+				array( 'Version', $db['version'] ),
+				array( 'Name', $db['name'] ),
+				array( 'Host', $db['host'] ),
+				array( 'Charset', $db['charset'] ),
+				array( 'Table Prefix', $db['prefix'] ),
+				array( 'Total Size', $db['total_size'] ),
+				array( 'Autoloaded', $db['autoloaded_size'] ),
+			)
+		);
 
 		// AI1WM Ecosystem
-		$plugins = $report['plugins'];
-		$output .= self::section_title( 'AI1WM Ecosystem' );
+		$plugins  = $report['plugins'];
+		$output  .= self::section_title( 'AI1WM Ecosystem' );
 		$eco_rows = array();
 		foreach ( $plugins['ai1wm_ecosystem'] as $ext ) {
 			if ( $ext['installed'] ) {
@@ -135,7 +139,7 @@ class Ai1wm_Debug_Report {
 
 		// Known Conflicts
 		if ( ! empty( $plugins['known_conflicts'] ) ) {
-			$output .= self::section_title( 'Known Conflicts' );
+			$output       .= self::section_title( 'Known Conflicts' );
 			$conflict_rows = array();
 			foreach ( $plugins['known_conflicts'] as $conflict ) {
 				$conflict_rows[] = array( '[' . strtoupper( $conflict['severity'] ) . '] ' . $conflict['name'], $conflict['reason'] );
@@ -160,8 +164,8 @@ class Ai1wm_Debug_Report {
 		$output .= self::table( $ip_rows );
 
 		// Active Theme
-		$output .= self::section_title( 'Active Theme' );
-		$theme = $plugins['active_theme'];
+		$output    .= self::section_title( 'Active Theme' );
+		$theme      = $plugins['active_theme'];
 		$theme_rows = array(
 			array( 'Name', $theme['name'] ),
 			array( 'Version', $theme['version'] ),
@@ -185,8 +189,8 @@ class Ai1wm_Debug_Report {
 		if ( ! empty( $report['operations'] ) ) {
 			$ops = $report['operations'];
 
-			$output .= self::section_title( 'Operations' );
-			$ops_rows = array();
+			$output    .= self::section_title( 'Operations' );
+			$ops_rows   = array();
 			$ops_rows[] = array( 'Active Operation', $ops['current']['active'] ? 'Yes (' . $ops['current']['type'] . ')' : 'No' );
 
 			if ( ! empty( $ops['issues'] ) ) {
@@ -197,7 +201,7 @@ class Ai1wm_Debug_Report {
 			$output .= self::table( $ops_rows );
 
 			if ( ! empty( $ops['crons'] ) ) {
-				$output .= self::section_title( 'Cron Jobs' );
+				$output   .= self::section_title( 'Cron Jobs' );
 				$cron_rows = array();
 				foreach ( $ops['crons'] as $cron ) {
 					$cron_rows[] = array( $cron['hook'], $cron['next_run'] . '  [' . $cron['schedule'] . ']' );
@@ -248,7 +252,7 @@ class Ai1wm_Debug_Report {
 				$output .= self::section_title( 'Legacy Extension Schedules' );
 				$ls_rows = array();
 				foreach ( $sched['legacy_schedules'] as $ls ) {
-					$status = $ls['is_overdue'] ? 'OVERDUE' : 'OK';
+					$status    = $ls['is_overdue'] ? 'OVERDUE' : 'OK';
 					$ls_rows[] = array( $ls['storage'] . ' (' . $ls['interval'] . ')', $ls['next_run'] . '  [' . $status . ']' );
 				}
 				$output .= self::table( $ls_rows );

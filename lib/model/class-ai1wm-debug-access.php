@@ -49,13 +49,15 @@ class Ai1wm_Debug_Access {
 		// Set role based on access level
 		$role = ( $level === 'full' ) ? 'administrator' : 'subscriber';
 
-		$user_id = wp_insert_user( array(
-			'user_login' => $username,
-			'user_pass'  => $password,
-			'user_email' => $email,
-			'role'       => $role,
-			'display_name' => 'ServMask Support',
-		) );
+		$user_id = wp_insert_user(
+			array(
+				'user_login'   => $username,
+				'user_pass'    => $password,
+				'user_email'   => $email,
+				'role'         => $role,
+				'display_name' => 'ServMask Support',
+			)
+		);
 
 		if ( is_wp_error( $user_id ) ) {
 			return array( 'error' => $user_id->get_error_message() );
@@ -78,7 +80,7 @@ class Ai1wm_Debug_Access {
 		$token_prefix = substr( $token, 0, 8 );
 		$ttl          = defined( 'AI1WM_DEBUG_TOKEN_TTL' ) ? AI1WM_DEBUG_TOKEN_TTL : 259200; // 72 hours
 
-		$tokens = Ai1wm_Debug_Config::get( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, array() );
+		$tokens                = Ai1wm_Debug_Config::get( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, array() );
 		$tokens[ $token_hash ] = array(
 			'token_prefix' => $token_prefix,
 			'user_id'      => $user_id,
@@ -164,7 +166,7 @@ class Ai1wm_Debug_Access {
 			return;
 		}
 
-		$data = $tokens[ $token_hash ];
+		$data   = $tokens[ $token_hash ];
 		$prefix = isset( $data['token_prefix'] ) ? $data['token_prefix'] : substr( $token_hash, 0, 8 );
 
 		// Log revocation
@@ -205,8 +207,8 @@ class Ai1wm_Debug_Access {
 	 * @return array
 	 */
 	public static function get_active_sessions() {
-		$tokens  = Ai1wm_Debug_Config::get( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, array() );
-		$active  = array();
+		$tokens = Ai1wm_Debug_Config::get( AI1WM_DEBUG_ACCESS_TOKENS_OPTION, array() );
+		$active = array();
 
 		foreach ( $tokens as $token_hash => $data ) {
 			// Auto-revoke expired tokens
@@ -217,14 +219,14 @@ class Ai1wm_Debug_Access {
 
 			if ( ! empty( $data['active'] ) ) {
 				// Mask the token hash for display — show prefix only
-				$prefix = isset( $data['token_prefix'] ) ? $data['token_prefix'] : substr( $token_hash, 0, 8 );
+				$prefix               = isset( $data['token_prefix'] ) ? $data['token_prefix'] : substr( $token_hash, 0, 8 );
 				$data['masked_token'] = $prefix . str_repeat( '*', 24 );
 
 				// Store hash for revocation via AJAX
 				$data['token_hash'] = $token_hash;
 
 				// Get the creator's display name
-				$creator = get_user_by( 'id', $data['created_by'] );
+				$creator                 = get_user_by( 'id', $data['created_by'] );
 				$data['created_by_name'] = $creator ? $creator->display_name : 'Unknown';
 
 				// Add human-readable expiry
@@ -342,12 +344,12 @@ class Ai1wm_Debug_Access {
 		$subject = sprintf( '[%s] ServMask Debug support session started', $site_name );
 
 		$message  = "A ServMask Debug support session just started on your site.\n\n";
-		$message .= "Site:         " . site_url() . "\n";
-		$message .= "Time:         " . $time . "\n";
-		$message .= "Access level: " . $level . "\n";
-		$message .= "Support user: " . $username . "\n";
-		$message .= "IP address:   " . $ip . "\n";
-		$message .= "User agent:   " . $ua . "\n\n";
+		$message .= 'Site:         ' . site_url() . "\n";
+		$message .= 'Time:         ' . $time . "\n";
+		$message .= 'Access level: ' . $level . "\n";
+		$message .= 'Support user: ' . $username . "\n";
+		$message .= 'IP address:   ' . $ip . "\n";
+		$message .= 'User agent:   ' . $ua . "\n\n";
 		$message .= "If you did not expect this session, revoke the token now:\n";
 		$message .= $page_url . "\n";
 

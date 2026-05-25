@@ -1,4 +1,5 @@
-<?php if ( ! defined( 'ABSPATH' ) ) { die( 'Kangaroos cannot fly!' ); } ?>
+<?php if ( ! defined( 'ABSPATH' ) ) {
+	die( 'Kangaroos cannot fly!' ); } ?>
 
 <h2>Operations Diagnostics</h2>
 

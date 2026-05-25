@@ -97,7 +97,7 @@ class Ai1wm_Debug_Audit {
 	 * @param string $details
 	 */
 	public static function log_action( $token, $action, $details = '' ) {
-		$user = wp_get_current_user();
+		$user     = wp_get_current_user();
 		$username = $user && $user->ID ? $user->user_login : 'unknown';
 
 		$line = sprintf(
@@ -197,9 +197,17 @@ class Ai1wm_Debug_Audit {
 
 		// Only log important options, not transients or internal ones
 		$tracked = array(
-			'blogname', 'blogdescription', 'siteurl', 'home',
-			'admin_email', 'users_can_register', 'default_role',
-			'permalink_structure', 'active_plugins', 'template', 'stylesheet',
+			'blogname',
+			'blogdescription',
+			'siteurl',
+			'home',
+			'admin_email',
+			'users_can_register',
+			'default_role',
+			'permalink_structure',
+			'active_plugins',
+			'template',
+			'stylesheet',
 		);
 
 		if ( in_array( $option, $tracked ) ) {

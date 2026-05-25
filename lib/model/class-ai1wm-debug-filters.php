@@ -32,7 +32,7 @@ class Ai1wm_Debug_Filters {
 	 */
 	public static function get_preset_definitions() {
 		return array(
-			'completed_timeout' => array(
+			'completed_timeout'     => array(
 				'filter'      => 'ai1wm_completed_timeout',
 				'label'       => 'Completed Timeout',
 				'description' => 'Seconds between pipeline stage iterations. Increase if stages time out on slow servers.',
@@ -40,7 +40,7 @@ class Ai1wm_Debug_Filters {
 				'default'     => 10,
 				'unit'        => 'seconds',
 			),
-			'max_chunk_size' => array(
+			'max_chunk_size'        => array(
 				'filter'      => 'ai1wm_max_chunk_size',
 				'label'       => 'Max Chunk Size',
 				'description' => 'Upload chunk size in bytes. Reduce for flaky connections, increase for fast ones.',
@@ -48,7 +48,7 @@ class Ai1wm_Debug_Filters {
 				'default'     => 2097152,
 				'unit'        => 'bytes',
 			),
-			'max_chunk_retries' => array(
+			'max_chunk_retries'     => array(
 				'filter'      => 'ai1wm_max_chunk_retries',
 				'label'       => 'Max Chunk Retries',
 				'description' => 'How many times to retry a failed chunk upload.',
@@ -56,7 +56,7 @@ class Ai1wm_Debug_Filters {
 				'default'     => 3,
 				'unit'        => '',
 			),
-			'http_export_timeout' => array(
+			'http_export_timeout'   => array(
 				'filter'      => 'ai1wm_http_export_timeout',
 				'label'       => 'HTTP Export Timeout',
 				'description' => 'Loopback request timeout for export pipeline (WP_CLI / cron).',
@@ -64,7 +64,7 @@ class Ai1wm_Debug_Filters {
 				'default'     => 10,
 				'unit'        => 'seconds',
 			),
-			'http_import_timeout' => array(
+			'http_import_timeout'   => array(
 				'filter'      => 'ai1wm_http_import_timeout',
 				'label'       => 'HTTP Import Timeout',
 				'description' => 'Loopback request timeout for import pipeline (WP_CLI / cron).',
@@ -72,7 +72,7 @@ class Ai1wm_Debug_Filters {
 				'default'     => 10,
 				'unit'        => 'seconds',
 			),
-			'http_export_blocking' => array(
+			'http_export_blocking'  => array(
 				'filter'      => 'ai1wm_http_export_blocking',
 				'label'       => 'HTTP Export Blocking',
 				'description' => 'Make export loopback requests blocking. Useful for debugging but slower.',
@@ -80,7 +80,7 @@ class Ai1wm_Debug_Filters {
 				'default'     => false,
 				'unit'        => '',
 			),
-			'http_import_blocking' => array(
+			'http_import_blocking'  => array(
 				'filter'      => 'ai1wm_http_import_blocking',
 				'label'       => 'HTTP Import Blocking',
 				'description' => 'Make import loopback requests blocking. Useful for debugging but slower.',
@@ -427,6 +427,7 @@ class Ai1wm_Debug_Filters {
 		$params = isset( $GLOBALS['ai1wm_params'] ) ? $GLOBALS['ai1wm_params'] : array();
 
 		try {
+			// phpcs:ignore Squiz.PHP.Eval.Discouraged -- intentional, gated behind AI1WM_DEBUG_ALLOW_EVAL above. Custom filter override engine for debugging.
 			$result = eval( $code );
 		} catch ( Exception $e ) {
 			if ( class_exists( 'Ai1wm_Debug_Logger' ) && Ai1wm_Debug_Logger::is_enabled() ) {

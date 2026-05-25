@@ -28,12 +28,14 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 }
 
 // Delete temporary support users
-$support_users = get_users( array(
-	'meta_key'   => '_ai1wm_debug_support_user',
-	'meta_value' => '1',
-) );
+$ai1wm_debug_support_users = get_users(
+	array(
+		'meta_key'   => '_ai1wm_debug_support_user',
+		'meta_value' => '1',
+	)
+);
 
-foreach ( $support_users as $user ) {
+foreach ( $ai1wm_debug_support_users as $ai1wm_debug_user ) {
 	require_once ABSPATH . 'wp-admin/includes/user.php';
-	wp_delete_user( $user->ID );
+	wp_delete_user( $ai1wm_debug_user->ID );
 }

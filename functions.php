@@ -42,6 +42,7 @@ function ai1wm_debug_is_ai1wm_active() {
 function ai1wm_debug_render( $view, $args = array() ) {
 	$file = AI1WM_DEBUG_VIEW_PATH . DIRECTORY_SEPARATOR . $view . '.php';
 	if ( file_exists( $file ) ) {
+		// phpcs:ignore WordPress.PHP.DontExtract.extract_extract -- intentional view-loader pattern.
 		extract( $args, EXTR_SKIP );
 		include $file;
 	}
@@ -63,7 +64,7 @@ function ai1wm_debug_size_format( $bytes, $decimals = 0 ) {
 
 	$bytes /= pow( 1024, $pow );
 
-	return number_format( $bytes, $decimals ) . ' ' . $units[$pow];
+	return number_format( $bytes, $decimals ) . ' ' . $units[ $pow ];
 }
 
 /**
@@ -115,7 +116,7 @@ function ai1wm_debug_tail_file( $file, $lines = 100 ) {
 		return '';
 	}
 
-	$buffer    = array();
+	$buffer     = array();
 	$line_count = 0;
 
 	while ( ! feof( $handle ) ) {
@@ -125,7 +126,7 @@ function ai1wm_debug_tail_file( $file, $lines = 100 ) {
 			$line_count++;
 
 			if ( $line_count > $lines * 2 ) {
-				$buffer = array_slice( $buffer, -$lines );
+				$buffer     = array_slice( $buffer, -$lines );
 				$line_count = count( $buffer );
 			}
 		}
@@ -273,6 +274,7 @@ function ai1wm_debug_get_base_plugin_latest_version() {
 	if ( is_array( $plugin_info ) && ! is_wp_error( $plugin_info ) ) {
 		$raw = wp_remote_retrieve_body( $plugin_info );
 		if ( version_compare( PHP_VERSION, '7.0.0', '>=' ) ) {
+			// phpcs:ignore PHPCompatibility.FunctionUse.NewFunctionParameters.unserialize_optionsFound -- guarded by version_compare above.
 			$body = @unserialize( $raw, array( 'allowed_classes' => array( 'stdClass' ) ) );
 		} else {
 			$body = @unserialize( $raw );

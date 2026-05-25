@@ -131,7 +131,7 @@ class Ai1wm_Debug_Schedules {
 			$next_run = self::get_next_cron_run( 'ai1wmke_schedule_event', array( $event_id ) );
 
 			// Build schedule description
-			$schedule = isset( $event_data['schedule'] ) ? (array) $event_data['schedule'] : array();
+			$schedule      = isset( $event_data['schedule'] ) ? (array) $event_data['schedule'] : array();
 			$schedule_desc = self::format_schedule( $schedule );
 
 			// Build retention description
@@ -146,20 +146,20 @@ class Ai1wm_Debug_Schedules {
 			$storage_name = self::resolve_storage_name( $storage_key );
 
 			$events[] = array(
-				'event_id'       => $event_id,
-				'title'          => isset( $event_data['title'] ) ? $event_data['title'] : 'Untitled',
-				'type'           => isset( $event_data['type'] ) ? $event_data['type'] : 'Export',
-				'storage'        => $storage_name,
-				'status'         => isset( $event_data['status'] ) ? $event_data['status'] : 'Disabled',
-				'repeating'      => ! empty( $event_data['repeating'] ),
-				'is_running'     => ! empty( $event_data['is_running'] ),
-				'schedule'       => $schedule_desc,
-				'next_run'       => $next_run,
-				'last_run'       => $last_run,
-				'retention'      => $retention_desc,
-				'notification'   => self::format_notification( $notification ),
-				'incremental'    => ! empty( $event_data['incremental'] ),
-				'recent_logs'    => array_slice( array_reverse( $logs ), 0, 5 ),
+				'event_id'     => $event_id,
+				'title'        => isset( $event_data['title'] ) ? $event_data['title'] : 'Untitled',
+				'type'         => isset( $event_data['type'] ) ? $event_data['type'] : 'Export',
+				'storage'      => $storage_name,
+				'status'       => isset( $event_data['status'] ) ? $event_data['status'] : 'Disabled',
+				'repeating'    => ! empty( $event_data['repeating'] ),
+				'is_running'   => ! empty( $event_data['is_running'] ),
+				'schedule'     => $schedule_desc,
+				'next_run'     => $next_run,
+				'last_run'     => $last_run,
+				'retention'    => $retention_desc,
+				'notification' => self::format_notification( $notification ),
+				'incremental'  => ! empty( $event_data['incremental'] ),
+				'recent_logs'  => array_slice( array_reverse( $logs ), 0, 5 ),
 			);
 		}
 
@@ -195,12 +195,12 @@ class Ai1wm_Debug_Schedules {
 						$expected_hook = $prefix . '_' . $interval . '_export';
 						if ( $hook === $expected_hook ) {
 							$schedules[] = array(
-								'hook'         => $hook,
-								'storage'      => $storage_name,
-								'interval'     => ucfirst( $interval ),
-								'next_run'     => date( 'Y-m-d H:i:s', $timestamp ),
-								'next_run_ts'  => $timestamp,
-								'is_overdue'   => $timestamp < time(),
+								'hook'        => $hook,
+								'storage'     => $storage_name,
+								'interval'    => ucfirst( $interval ),
+								'next_run'    => date( 'Y-m-d H:i:s', $timestamp ),
+								'next_run_ts' => $timestamp,
+								'is_overdue'  => $timestamp < time(),
 							);
 						}
 					}
@@ -236,10 +236,10 @@ class Ai1wm_Debug_Schedules {
 
 				foreach ( $events as $key => $event ) {
 					$entries[] = array(
-						'hook'      => $hook,
-						'next_run'  => date( 'Y-m-d H:i:s', $timestamp ),
-						'schedule'  => isset( $event['schedule'] ) ? $event['schedule'] : 'once',
-						'args'      => ! empty( $event['args'] ) ? $event['args'] : array(),
+						'hook'       => $hook,
+						'next_run'   => date( 'Y-m-d H:i:s', $timestamp ),
+						'schedule'   => isset( $event['schedule'] ) ? $event['schedule'] : 'once',
+						'args'       => ! empty( $event['args'] ) ? $event['args'] : array(),
 						'is_overdue' => $timestamp < time(),
 					);
 				}
@@ -330,7 +330,7 @@ class Ai1wm_Debug_Schedules {
 		}
 
 		// Check all cron entries for overdue AI1WM tasks
-		$cron_entries = self::get_ai1wm_cron_entries();
+		$cron_entries  = self::get_ai1wm_cron_entries();
 		$overdue_count = 0;
 		foreach ( $cron_entries as $entry ) {
 			if ( $entry['is_overdue'] ) {
@@ -464,7 +464,7 @@ class Ai1wm_Debug_Schedules {
 			return 'None';
 		}
 
-		$parts = array();
+		$parts   = array();
 		$backups = isset( $retention['backups'] ) ? intval( $retention['backups'] ) : 0;
 		$days    = isset( $retention['days'] ) ? intval( $retention['days'] ) : 0;
 		$total   = isset( $retention['total'] ) ? intval( $retention['total'] ) : 0;

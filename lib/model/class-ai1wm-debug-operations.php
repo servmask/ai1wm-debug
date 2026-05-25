@@ -36,11 +36,11 @@ class Ai1wm_Debug_Operations {
 		}
 
 		return array(
-			'status'   => self::get_current_status(),
-			'storage'  => self::get_storage_files(),
-			'backups'  => self::get_backups(),
-			'crons'    => self::get_ai1wm_crons(),
-			'issues'   => self::get_common_issues(),
+			'status'  => self::get_current_status(),
+			'storage' => self::get_storage_files(),
+			'backups' => self::get_backups(),
+			'crons'   => self::get_ai1wm_crons(),
+			'issues'  => self::get_common_issues(),
 		);
 	}
 
@@ -51,8 +51,8 @@ class Ai1wm_Debug_Operations {
 	 */
 	public static function get_current_status() {
 		$status = array(
-			'active' => false,
-			'type'   => 'None',
+			'active'  => false,
+			'type'    => 'None',
 			'message' => '',
 		);
 
@@ -96,7 +96,7 @@ class Ai1wm_Debug_Operations {
 				continue;
 			}
 
-			$path = AI1WM_STORAGE_PATH . DIRECTORY_SEPARATOR . $entry;
+			$path    = AI1WM_STORAGE_PATH . DIRECTORY_SEPARATOR . $entry;
 			$files[] = array(
 				'name'     => $entry,
 				'size'     => is_file( $path ) ? ai1wm_debug_size_format( filesize( $path ), 2 ) : 'DIR',
@@ -169,9 +169,9 @@ class Ai1wm_Debug_Operations {
 				if ( strpos( $hook, 'ai1wm' ) !== false ) {
 					foreach ( $events as $event ) {
 						$crons[] = array(
-							'hook'      => $hook,
-							'next_run'  => date( 'Y-m-d H:i:s', $timestamp ),
-							'schedule'  => isset( $event['schedule'] ) ? $event['schedule'] : 'Once',
+							'hook'     => $hook,
+							'next_run' => date( 'Y-m-d H:i:s', $timestamp ),
+							'schedule' => isset( $event['schedule'] ) ? $event['schedule'] : 'Once',
 						);
 					}
 				}

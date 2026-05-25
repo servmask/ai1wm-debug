@@ -103,46 +103,58 @@ class Ai1wm_Debug_Main_Controller {
 		// .htaccess (Apache 2.2 + 2.4 compat)
 		$htaccess = $dir . DIRECTORY_SEPARATOR . '.htaccess';
 		if ( ! file_exists( $htaccess ) ) {
-			@file_put_contents( $htaccess, implode( "\n", array(
-				'<IfModule mod_authz_core.c>',
-				'	<FilesMatch ".*">',
-				'		Require all denied',
-				'	</FilesMatch>',
-				'</IfModule>',
-				'<IfModule !mod_authz_core.c>',
-				'	Order allow,deny',
-				'	Deny from all',
-				'</IfModule>',
-				'<IfModule mod_dir.c>',
-				'	DirectoryIndex index.php',
-				'</IfModule>',
-				'<IfModule mod_autoindex.c>',
-				'	Options -Indexes',
-				'</IfModule>',
-			) ) );
+			@file_put_contents(
+				$htaccess,
+				implode(
+					"\n",
+					array(
+						'<IfModule mod_authz_core.c>',
+						'	<FilesMatch ".*">',
+						'		Require all denied',
+						'	</FilesMatch>',
+						'</IfModule>',
+						'<IfModule !mod_authz_core.c>',
+						'	Order allow,deny',
+						'	Deny from all',
+						'</IfModule>',
+						'<IfModule mod_dir.c>',
+						'	DirectoryIndex index.php',
+						'</IfModule>',
+						'<IfModule mod_autoindex.c>',
+						'	Options -Indexes',
+						'</IfModule>',
+					)
+				)
+			);
 		}
 
 		// web.config (IIS)
 		$webconfig = $dir . DIRECTORY_SEPARATOR . 'web.config';
 		if ( ! file_exists( $webconfig ) ) {
-			@file_put_contents( $webconfig, implode( "\n", array(
-				'<?xml version="1.0" encoding="utf-8"?>',
-				'<configuration>',
-				'	<system.webServer>',
-				'		<security>',
-				'			<authorization>',
-				'				<deny users="*" />',
-				'			</authorization>',
-				'		</security>',
-				'		<defaultDocument>',
-				'			<files>',
-				'				<add value="index.php" />',
-				'			</files>',
-				'		</defaultDocument>',
-				'		<directoryBrowse enabled="false" />',
-				'	</system.webServer>',
-				'</configuration>',
-			) ) );
+			@file_put_contents(
+				$webconfig,
+				implode(
+					"\n",
+					array(
+						'<?xml version="1.0" encoding="utf-8"?>',
+						'<configuration>',
+						'	<system.webServer>',
+						'		<security>',
+						'			<authorization>',
+						'				<deny users="*" />',
+						'			</authorization>',
+						'		</security>',
+						'		<defaultDocument>',
+						'			<files>',
+						'				<add value="index.php" />',
+						'			</files>',
+						'		</defaultDocument>',
+						'		<directoryBrowse enabled="false" />',
+						'	</system.webServer>',
+						'</configuration>',
+					)
+				)
+			);
 		}
 
 		// index.php
@@ -184,7 +196,7 @@ class Ai1wm_Debug_Main_Controller {
 	public function filter_caps( $allcaps, $caps, $args ) {
 		// Administrators automatically get debug view access
 		if ( ! empty( $allcaps['manage_options'] ) ) {
-			$allcaps[AI1WM_DEBUG_VIEW_CAPABILITY] = true;
+			$allcaps[ AI1WM_DEBUG_VIEW_CAPABILITY ] = true;
 		}
 
 		return $allcaps;
@@ -217,7 +229,7 @@ class Ai1wm_Debug_Main_Controller {
 			'servmask-debug',
 			'ai1wm_debug',
 			array(
-				'ajax' => array(
+				'ajax'  => array(
 					'url' => wp_make_link_relative( admin_url( 'admin-ajax.php' ) ),
 				),
 				'nonce' => wp_create_nonce( AI1WM_DEBUG_NONCE ),
@@ -263,7 +275,7 @@ class Ai1wm_Debug_Main_Controller {
 		$tabs['help'] = 'Help';
 
 		// Validate current tab
-		if ( ! isset( $tabs[$current_tab] ) ) {
+		if ( ! isset( $tabs[ $current_tab ] ) ) {
 			$current_tab = 'environment';
 		}
 
@@ -278,12 +290,15 @@ class Ai1wm_Debug_Main_Controller {
 			}
 		}
 
-		ai1wm_debug_render( 'main/index', array(
-			'tabs'         => $tabs,
-			'current_tab'  => $current_tab,
-			'ai1wm_active' => $ai1wm_active,
-			'tab_args'     => $tab_args,
-		) );
+		ai1wm_debug_render(
+			'main/index',
+			array(
+				'tabs'         => $tabs,
+				'current_tab'  => $current_tab,
+				'ai1wm_active' => $ai1wm_active,
+				'tab_args'     => $tab_args,
+			)
+		);
 	}
 
 	/**

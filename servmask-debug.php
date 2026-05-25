@@ -36,16 +36,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Plugin Basename
-define( 'AI1WM_DEBUG_PLUGIN_BASENAME', basename( dirname( __FILE__ ) ) . '/' . basename( __FILE__ ) );
+define( 'AI1WM_DEBUG_PLUGIN_BASENAME', basename( __DIR__ ) . '/' . basename( __FILE__ ) );
 
 // Plugin Path
-define( 'AI1WM_DEBUG_PATH', dirname( __FILE__ ) );
+define( 'AI1WM_DEBUG_PATH', __DIR__ );
 
 // Plugin URL
 define( 'AI1WM_DEBUG_URL', plugins_url( '', __FILE__ ) );
 
-require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'constants.php';
-require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'loader.php';
-require_once dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'functions.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'constants.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'loader.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'functions.php';
 
 $ai1wm_debug_main_controller = new Ai1wm_Debug_Main_Controller();

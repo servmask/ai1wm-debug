@@ -1,19 +1,36 @@
+# top-most EditorConfig file
 root = true
 
+# Unix-style newlines with a newline ending every file
 [*]
-indent_style = tab
-indent_size = 4
 end_of_line = lf
 charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
+indent_style = tab
 
-[*.{yml,yaml}]
+# PHP
+[*.php]
+indent_style = tab
+
+# JavaScript
+[*.js]
+indent_style = tab
+
+# CSS
+[*.css]
+indent_style = tab
+
+# YAML
+[*.yml]
 indent_style = space
-indent_size = 2
+indent_size = 4
 
-[*.md]
-trim_trailing_whitespace = false
+# JSON
+[*.json]
+indent_style = space
+indent_size = 4
 
-[Makefile]
+# SASS
+[*.scss]
 indent_style = tab

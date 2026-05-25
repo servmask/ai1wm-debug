@@ -86,6 +86,7 @@ class Ai1wm_Debug_Ajax_Controller {
 		if ( $format === 'json' ) {
 			header( 'Content-Type: application/json' );
 			header( 'Content-Disposition: attachment; filename=' . $site_name . '-debug-report.json' );
+			// phpcs:ignore PHPCompatibility.Constants.NewConstants.json_pretty_printFound -- polyfilled in constants.php for PHP <5.4.
 			echo json_encode( Ai1wm_Debug_Report::generate(), JSON_PRETTY_PRINT );
 		} else {
 			header( 'Content-Type: text/plain' );
@@ -107,7 +108,7 @@ class Ai1wm_Debug_Ajax_Controller {
 		$result = Ai1wm_Debug_Logger::read_new_entries( $last_pos, $filename );
 
 		// Include current run filename so JS can detect run changes
-		$current = Ai1wm_Debug_Logger::get_current_log_file();
+		$current                = Ai1wm_Debug_Logger::get_current_log_file();
 		$result['current_file'] = $current ? basename( $current ) : '';
 
 		wp_send_json( $result );
@@ -220,7 +221,7 @@ class Ai1wm_Debug_Ajax_Controller {
 		}
 
 		// Sanitize exclusions
-		$saved_exclusions = array();
+		$saved_exclusions     = array();
 		$valid_exclusion_keys = array( 'content', 'media', 'plugins', 'themes' );
 		foreach ( $valid_exclusion_keys as $key ) {
 			$saved_exclusions[ $key ] = isset( $exclusions[ $key ] ) ? sanitize_textarea_field( $exclusions[ $key ] ) : '';
@@ -252,11 +253,14 @@ class Ai1wm_Debug_Ajax_Controller {
 			}
 		}
 
-		Ai1wm_Debug_Config::set( AI1WM_DEBUG_FILTER_OVERRIDES_OPTION, array(
-			'presets'    => $saved_presets,
-			'exclusions' => $saved_exclusions,
-			'custom'     => $saved_custom,
-		) );
+		Ai1wm_Debug_Config::set(
+			AI1WM_DEBUG_FILTER_OVERRIDES_OPTION,
+			array(
+				'presets'    => $saved_presets,
+				'exclusions' => $saved_exclusions,
+				'custom'     => $saved_custom,
+			)
+		);
 
 		wp_send_json( array( 'success' => true ) );
 	}
