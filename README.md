@@ -1,6 +1,13 @@
 # ServMask Debug
 
+[![CI](https://github.com/servmask/ai1wm-debug/actions/workflows/ci.yml/badge.svg)](https://github.com/servmask/ai1wm-debug/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/servmask/ai1wm-debug?include_prereleases&sort=semver)](https://github.com/servmask/ai1wm-debug/releases/latest)
+[![License](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)](LICENSE)
+[![Docs](https://img.shields.io/badge/docs-debug.wp--migration.com-green.svg)](https://debug.wp-migration.com)
+
 Universal debug and support tool for the ServMask plugin ecosystem. Replaces `servmask-agent` and `servmask-client` as the single diagnostic and support access plugin.
+
+**Download:** [debug.wp-migration.com](https://debug.wp-migration.com) (always the latest release)
 
 ## Overview
 
@@ -14,7 +21,7 @@ ServMask Debug is a standalone WordPress plugin that provides comprehensive diag
 
 ## Installation
 
-1. Download the `servmask-debug` ZIP
+1. Download the latest `servmask-debug.zip` from [debug.wp-migration.com](https://debug.wp-migration.com) or the [GitHub Releases page](https://github.com/servmask/ai1wm-debug/releases/latest)
 2. Upload via **Plugins > Add New > Upload Plugin**, or extract to `wp-content/plugins/`
 3. Activate the plugin
 4. Navigate to **ServMask Debug** in the admin sidebar
@@ -149,8 +156,15 @@ On plugin deletion, `uninstall.php` removes:
 - All temporary support users (identified by `_ai1wm_debug_support_user` meta)
 - The `storage/` directory and all its contents
 
+## Project
+
+- [Changelog](CHANGELOG.md): release notes per version
+- [Contributing](CONTRIBUTING.md): dev setup, coding standards, PR workflow
+- [Security Policy](SECURITY.md): private vulnerability disclosure via GitHub Security Advisories
+- [Code of Conduct](CODE_OF_CONDUCT.md): Contributor Covenant v2.1
+
 ## License
 
-GNU General Public License v3.0 or later.
+Licensed under the [GNU General Public License v3.0 or later](LICENSE).
 
 Copyright (C) 2014-2026 ServMask Inc.
